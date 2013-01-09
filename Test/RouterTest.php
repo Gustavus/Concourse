@@ -57,6 +57,15 @@ class RouterTest extends Test
   /**
    * @test
    */
+  public function handleRequestFileName()
+  {
+    $actual = Router::handleRequest('/cis/lib/Gustavus/Concourse/Test/routing.php', '');
+    $this->assertSame('RouterTestController index()', $actual);
+  }
+
+  /**
+   * @test
+   */
   public function handleRequestAdvanced()
   {
     $actual = Router::handleRequest($this->routingConfig, '/indexTwo/23');
@@ -65,11 +74,10 @@ class RouterTest extends Test
 
   /**
    * @test
-   * @expectedException OutOfBoundsException
    */
-  public function handleRequestException()
+  public function handleRequestNotFound()
   {
-    $actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/25');
+    //$actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/25');
     // exception expected. nothing else happens here
   }
 

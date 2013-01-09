@@ -19,12 +19,15 @@ class Router
   /**
    * Handles the requested route and calls the respective controller
    *
-   * @param  array  $routingConfig Keyed by route values are arrays with options of handler and security
+   * @param  array|string  $routingConfig Array or path to an array of configurations. Keyed by route values are arrays with options of handler and security
    * @param  string $route The path from the application's root that the user is requesting
    * @return string
    */
-  public static function handleRequest(array $routingConfig, $route)
+  public static function handleRequest($routingConfig, $route)
   {
+    if (!is_array($routingConfig)) {
+      $routingConfig = include($routingConfig);//(new File($routingConfig))->loadAndEvaluate();
+    }
     if (strpos($route, '/') !== 0) {
       // all of the routingConfig indexes should be from the application root
       $route = '/' . $route;
@@ -153,8 +156,7 @@ class Router
   private static function userCanAccessPage(array $routeConfig)
   {
     if (isset($routeConfig['visibleTo'])) {
-
-      if (Gatekeeper::checkPermissions(key($routeConfig['visibleTo']), Gatekeeper::LOG_IN_LEVEL_ALL, current($routeConfig['visibleTo']))) {
+      if (Gatekeeper::checkPermissions(key($routeConfig['visibleTo']), Gatekeeper::LOG_IN_LEVEL_ALL, array_merge(current($routeConfig['visibleTo']), [Gatekeeper::LOG_IN_LEVEL_ALL]))) {
         return true;
       } else if (!Gatekeeper::isLoggedIn() && PHP_SAPI !== 'cli') {
         Gatekeeper::logIn(str_replace('http:', 'https:', $_SERVER['HTTP_REFERER']));
