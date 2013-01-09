@@ -11,6 +11,8 @@ require_once 'gatekeeper/gatekeeper.class.php';
 use Gustavus\Gatekeeper\Gatekeeper;
 
 /**
+ * Manages sending people to the requested page. Checks to see if the user has access to it first.
+ *
  * @package  Concourse
  * @author  Billy Visto
  */
@@ -49,18 +51,6 @@ class Router
 
       ob_end_flush();
       exit;
-
-
-      // header("HTTP/1.0 404 Not Found");
-      // ob_start();
-
-      // $_SERVER['REDIRECT_STATUS'] = 403;
-      // $_SERVER['REDIRECT_URL'] = $_SERVER['HTTP_REFERER'];
-      // \Gustavus\Extensibility\Filters::add('localNavigation', 'localNavigation');
-      // include_once('/cis/www/errorPages/error.php');
-
-      // ob_end_flush();
-      // exit;
     }
   }
 
@@ -74,7 +64,7 @@ class Router
   private static function runHandler(array $routeConfig, array $args = array())
   {
     if (!Router::userCanAccessPage($routeConfig)) {
-      header("HTTP/1.0 403 Forbidden");
+      header('HTTP/1.0 403 Forbidden');
       ob_start();
 
       $_SERVER['REDIRECT_STATUS'] = 403;
