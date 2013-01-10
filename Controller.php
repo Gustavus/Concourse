@@ -11,6 +11,7 @@ require_once 'gatekeeper/gatekeeper.class.php';
 use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Gatekeeper\Gatekeeper,
   Gustavus\Doctrine\EntityManager,
+  Gustavus\TwigFactory\TwigFactory,
   Campus\Pull\People;
 
 /**
@@ -282,6 +283,19 @@ abstract class Controller
     ];
 
     return (new TemplateBuilder($args, $this->getTemplatePreferences()))->render();
+  }
+
+  /**
+   * Renders a template specified in $view out in the GAC template
+   *
+   * @param  string $view       path to the template view
+   * @param  array  $parameters parameters to pass to the view
+   * @return string
+   */
+  protected function renderTemplate($view, array $parameters = array())
+  {
+    $this->setContent(TwigFactory::renderTwigFilesystemTemplate($view, $parameters, \Config::isBeta()));
+    return $this->renderPage();
   }
 
   /**
