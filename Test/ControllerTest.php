@@ -6,10 +6,13 @@
 
 namespace Gustavus\Concourse;
 
+require_once 'gatekeeper/gatekeeper.class.php';
+
 use Gustavus\Test\Test,
   Gustavus\Test\TestObject,
   Gustavus\Concourse\Controller,
-  Gustavus\Concourse\Test\ControllerTestController;
+  Gustavus\Concourse\Test\ControllerTestController,
+  Gustavus\Gatekeeper\Gatekeeper;
 
 /**
  * @package Concourse
@@ -59,6 +62,29 @@ class ControllerTest extends Test
   public function tearDown()
   {
     unset($this->controller);
+  }
+
+  /**
+   * Mocks authentication
+   *
+   * @param  string $username
+   * @return
+   */
+  private function authenticate($username)
+  {
+    Gatekeeper::setUsername($username);
+    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'loggedIn', true);
+  }
+
+  /**
+   * Mocks authentication logged out
+   *
+   * @return
+   */
+  private function unAuthenticate()
+  {
+    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'user', null);
+    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'loggedIn', false);
   }
 
   /**
@@ -135,5 +161,70 @@ class ControllerTest extends Test
     $expected = array_merge($this->controllerProperties['templatePreferences'], $addition);
     $this->controller->addTemplatePreferences($addition);
     $this->assertSame($expected, $this->controller->getTemplatePreferences());
+  }
+
+  /**
+   * @test
+   */
+  public function isLoggedIn()
+  {
+    $this->assertFalse($this->controller->isLoggedIn());
+
+    $this->authenticate('bvisto');
+    $this->assertTrue($this->controller->isLoggedIn());
+    $this->unAuthenticate();
+  }
+
+  /**
+   * @test
+   */
+  public function getLoggedInPerson()
+  {
+    $this->assertSame(null, $this->controller->getLoggedInPerson());
+
+    $this->authenticate('bvisto');
+    $this->assertSame(911828, $this->controller->getLoggedInPerson()->getPersonId());
+    $this->unAuthenticate();
+
+    Gatekeeper::setUsername('');
+    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'loggedIn', true);
+    $this->assertSame((int) '-1', $this->controller->getLoggedInPerson()->getPersonId());
+    $this->unAuthenticate();
+  }
+
+  /**
+   * @test
+   */
+  public function getLoggedInPersonNoPerson()
+  {
+    $this->assertSame(null, $this->controller->getLoggedInPerson());
+
+    $this->authenticate('arst');
+    $this->assertSame((int) '-1', $this->controller->getLoggedInPerson()->getPersonId());
+    $this->unAuthenticate();
+  }
+
+  /**
+   * @test
+   */
+  public function getLoggedInPersonId()
+  {
+    $this->assertSame(null, $this->controller->getLoggedInPersonId());
+
+    $this->authenticate('arst');
+    $this->assertSame((int) '-1', $this->controller->getLoggedInPersonId());
+    $this->unAuthenticate();
+  }
+
+  /**
+   * @test
+   */
+  public function getLoggedInUsername()
+  {
+    $this->assertSame(null, $this->controller->getLoggedInUsername());
+
+    $this->authenticate('arst');
+    $this->assertSame('arst', $this->controller->getLoggedInUsername());
+    $this->unAuthenticate();
   }
 }

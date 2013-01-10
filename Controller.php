@@ -5,7 +5,12 @@
  */
 
 namespace Gustavus\Concourse;
-use Gustavus\TemplateBuilder\Builder as TemplateBuilder;
+
+require_once 'gatekeeper/gatekeeper.class.php';
+
+use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
+  Gustavus\Gatekeeper\Gatekeeper,
+  Campus\Pull\People;
 
 /**
  * Shared controller for all Concourse applications
@@ -200,17 +205,16 @@ abstract class Controller
   }
 
   /**
-   * Returns the local navigation array to be supplied to the Item Factory in $this->renderLocalNavigation()
+   * Returns the local navigation parameters
    *
-   * @return array a valid array to be passed into the ItemFactory class
+   * @return array|string Either an array for \Gustavus\LocalNavigation\ItemFactory, or string of html
    */
   abstract protected function getLocalNavigation();
-
 
   /**
    * Sets the local navigation
    *
-   * @param string|array $localNavigation Either an array for the \Gustavus\LocalNavigation, or string of html
+   * @param string|array $localNavigation Either an array for \Gustavus\LocalNavigation/ItemFactory, or string of html
    * @return $this to enable method chaining
    */
   protected function setLocalNavigation($localNavigation)
@@ -271,5 +275,54 @@ abstract class Controller
     ];
 
     return (new TemplateBuilder($args, $this->getTemplatePreferences()))->render();
+  }
+
+  /**
+   * Checks to see if a user is logged in.
+   * @return boolean true if the user is logged in, false otherwise
+   */
+  protected function isLoggedIn()
+  {
+    return Gatekeeper::isLoggedIn();
+  }
+
+  /**
+   * Gets the username of the logged in user.
+   * @return string|null returns a string if the user is logged in, null otherwise
+   */
+  protected function getLoggedInUsername()
+  {
+    $person = $this->getLoggedInPerson();
+    return ($person !== null) ? $person->getUsername() : null;
+  }
+
+  /**
+   * Gets the user id of the logged in user.
+   * @return int|null returns the id number of the logged in user or null if they are not logged in.
+   */
+  protected function getLoggedInPersonId()
+  {
+    $person = $this->getLoggedInPerson();
+    return ($person !== null) ? $person->getPersonId() : null;
+  }
+
+  /**
+   * Gets the Campus\Person of the logged in user.
+   * @return Person|null returns the logged in Person if found. null otherwise
+   */
+  protected function getLoggedInPerson()
+  {
+    if ($this->isLoggedIn()) {
+      $person = Gatekeeper::getUser();
+      if (is_object($person)) {
+        if ($person->getPersonId() !== -1) {
+          // we don't want to use Gatekeepers apiKey, so lets get the personId from gatekeeper's user and make our own with our application specific apiKey
+          $campusPuller = new People($this->apiKey);
+          $person = $campusPuller->setPersonId($person->getPersonId())->current();
+        }
+        return $person;
+      }
+    }
+    return null;
   }
 }
