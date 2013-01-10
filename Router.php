@@ -149,7 +149,7 @@ class Router
       if (Gatekeeper::checkPermissions(key($routeConfig['visibleTo']), Gatekeeper::LOG_IN_LEVEL_ALL, array_merge(current($routeConfig['visibleTo']), [Gatekeeper::LOG_IN_LEVEL_ALL]))) {
         return true;
       } else if (!Gatekeeper::isLoggedIn() && PHP_SAPI !== 'cli') {
-        Gatekeeper::logIn(str_replace('http:', 'https:', $_SERVER['HTTP_REFERER']));
+        Gatekeeper::logIn('https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
         return false;
       } else if (PHP_SAPI === 'cli' && \Config::isBeta()) {
         // cron job, so users can always access pages
