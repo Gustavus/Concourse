@@ -227,4 +227,13 @@ class ControllerTest extends Test
     $this->assertSame('arst', $this->controller->getLoggedInUsername());
     $this->unAuthenticate();
   }
+
+  /**
+   * @test
+   */
+  public function getMethod()
+  {
+    // will never be set from cli
+    $this->assertSame('', $this->controller->getMethod());
+  }
 }

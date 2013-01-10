@@ -10,6 +10,7 @@ require_once 'gatekeeper/gatekeeper.class.php';
 
 use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Gatekeeper\Gatekeeper,
+  Gustavus\Doctrine\EntityManager,
   Campus\Pull\People;
 
 /**
@@ -61,6 +62,12 @@ abstract class Controller
    * @var array
    */
   protected $templatePreferences = [];
+
+  /**
+   * DoctrineEntityManager
+   * @var DoctrineEntityManager
+   */
+  protected static $em;
 
   /**
    * Gets the apiKey being used by the application.
@@ -257,6 +264,15 @@ abstract class Controller
     return $this;
   }
 
+
+  protected function getEM($applicationPath, $dbName = '')
+  {
+    if (!isset(self::$em)) {
+      self::$em = EntityManager::getEntityManager($applicationPath, null, $dbName);
+    }
+    return self::$em;
+  }
+
   /**
    * Renders the page with the pre-set properties.
    *
@@ -324,5 +340,15 @@ abstract class Controller
       }
     }
     return null;
+  }
+
+  /**
+   * Gets the current request method of the server
+   *
+   * @return string
+   */
+  protected function getMethod()
+  {
+    return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
   }
 }
