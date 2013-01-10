@@ -6,9 +6,14 @@
 
 namespace Gustavus\Concourse;
 
+require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
-use Gustavus\Gatekeeper\Gatekeeper;
+use Gustavus\Gatekeeper\Gatekeeper,
+  TemplatePageRequest;
+
+// start up error reporting for certain users
+TemplatePageRequest::start();
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -28,7 +33,7 @@ class Router
   public static function handleRequest($routingConfig, $route)
   {
     if (!is_array($routingConfig)) {
-      $routingConfig = include($routingConfig);//(new File($routingConfig))->loadAndEvaluate();
+      $routingConfig = include($routingConfig);
     }
     if (strpos($route, '/') !== 0) {
       // all of the routingConfig indexes should be from the application root
