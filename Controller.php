@@ -206,6 +206,19 @@ abstract class Controller
    */
   abstract protected function getLocalNavigation();
 
+
+  /**
+   * Sets the local navigation
+   *
+   * @param string|array $localNavigation Either an array for the \Gustavus\LocalNavigation, or string of html
+   * @return $this to enable method chaining
+   */
+  protected function setLocalNavigation($localNavigation)
+  {
+    $this->localNavigation = $localNavigation;
+    return $this;
+  }
+
   /**
    * Gets the template preferences for the page.
    *
