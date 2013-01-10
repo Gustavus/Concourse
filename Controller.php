@@ -64,8 +64,8 @@ abstract class Controller
   protected $templatePreferences = [];
 
   /**
-   * DoctrineEntityManager
-   * @var DoctrineEntityManager
+   * Doctrine\ORM\EntityManager
+   * @var Doctrine\ORM\EntityManager
    */
   protected static $em;
 
@@ -264,15 +264,6 @@ abstract class Controller
     return $this;
   }
 
-
-  protected function getEM($applicationPath, $dbName = '')
-  {
-    if (!isset(self::$em)) {
-      self::$em = EntityManager::getEntityManager($applicationPath, null, $dbName);
-    }
-    return self::$em;
-  }
-
   /**
    * Renders the page with the pre-set properties.
    *
@@ -340,6 +331,21 @@ abstract class Controller
       }
     }
     return null;
+  }
+
+  /**
+   * Sets up and returns the entity manager
+   *
+   * @param  string $applicationPath full path to the application
+   * @param  string $dbName          name of the database in the config file
+   * @return Doctrine\ORM\EntityManager
+   */
+  protected function getEM($applicationPath, $dbName = '')
+  {
+    if (!isset(self::$em)) {
+      self::$em = EntityManager::getEntityManager($applicationPath, null, $dbName);
+    }
+    return self::$em;
   }
 
   /**

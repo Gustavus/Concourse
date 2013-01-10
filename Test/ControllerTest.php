@@ -231,6 +231,14 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function getEM()
+  {
+    $this->assertInstanceOf('Doctrine\ORM\EntityManager', $this->controller->getEM('/cis/lib/Gustavus/Menu', 'menu'));
+  }
+
+  /**
+   * @test
+   */
   public function getMethod()
   {
     // will never be set from cli
