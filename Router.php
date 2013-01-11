@@ -151,14 +151,15 @@ class Router
   private static function userCanAccessPage(array $routeConfig)
   {
     if (isset($routeConfig['visibleTo'])) {
-      if (Gatekeeper::checkPermissions(key($routeConfig['visibleTo']), Gatekeeper::LOG_IN_LEVEL_ALL, array_merge(current($routeConfig['visibleTo']), [Gatekeeper::LOG_IN_LEVEL_ALL]))) {
+      $applicationName = isset($routeConfig['visibleTo'][0]) ? $routeConfig['visibleTo'][0] : '';
+      $permissions     = isset($routeConfig['visibleTo'][1]) ? $routeConfig['visibleTo'][1] : [];
+      $loginLevel      = isset($routeConfig['visibleTo'][2]) ? $routeConfig['visibleTo'][2] : Gatekeeper::LOG_IN_LEVEL_ALL;
+
+      if (Gatekeeper::checkPermissions($applicationName, $loginLevel, $permissions)) {
         return true;
       } else if (!Gatekeeper::isLoggedIn() && PHP_SAPI !== 'cli') {
         Gatekeeper::logIn('https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
         return false;
-      } else if (PHP_SAPI === 'cli' && \Config::isBeta()) {
-        // cron job, so users can always access pages
-        return true;
       }
       return false;
     }
