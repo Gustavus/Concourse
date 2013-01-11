@@ -65,29 +65,6 @@ class ControllerTest extends Test
   }
 
   /**
-   * Mocks authentication
-   *
-   * @param  string $username
-   * @return
-   */
-  private function authenticate($username)
-  {
-    Gatekeeper::setUsername($username);
-    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'loggedIn', true);
-  }
-
-  /**
-   * Mocks authentication logged out
-   *
-   * @return
-   */
-  private function unAuthenticate()
-  {
-    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'user', null);
-    $this->set('\Gustavus\Gatekeeper\Gatekeeper', 'loggedIn', false);
-  }
-
-  /**
    * @test
    */
   public function getApiKey()
