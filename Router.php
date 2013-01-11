@@ -21,8 +21,30 @@ class Router
 {
   /**
    * Handles the requested route and calls the respective controller
+   * VisibleTo Options:
+   *   array[0] = application name
+   *   array[1] = permissions array
+   *   array[2] = login level
    *
-   * @param  array|string  $routingConfig Array or path to an array of configurations. Keyed by route values are arrays with options of handler and security
+   * Example visibleTo:
+   * <code>
+   *   array('template', array('callbacks' => array('isAdministrator')), Gatekeeper::LOG_IN_LEVEL_ALL);
+   * </code>
+   *
+   * Example routingConfig:
+   * <code>
+   *   array(
+   *     '/' => array(
+   *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
+   *     ),
+   *     '/indexTwo/{id}' => array(
+   *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
+   *         'visibleTo' => array('template', array('admin'))
+   *     ),
+   *   );
+   * </code>
+   *
+   * @param  array|string  $routingConfig Array or path to an array of configurations. Keyed by route values are arrays with options of handler and visibleTo.
    * @param  string $route The path from the application's root that the user is requesting
    * @return string
    */
