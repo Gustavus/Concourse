@@ -78,6 +78,15 @@ class RouterTest extends Test
   /**
    * @test
    */
+  public function handleRequestAdvancedTwoParams()
+  {
+    $actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/arst');
+    $this->assertSame('RouterTestController indexThree(23, arst)', $actual);
+  }
+
+  /**
+   * @test
+   */
   public function handleRequestNotFound()
   {
     //$actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/25');

@@ -11,6 +11,11 @@ class RouterTestController
 
   public function indexTwo($testArg)
   {
-    return "RouterTestController indexTwo({$testArg})";
+    return "RouterTestController indexTwo({$testArg['id']})";
+  }
+
+  public function indexThree($testArg)
+  {
+    return "RouterTestController indexThree({$testArg['id']}, {$testArg['key']})";
   }
 }
