@@ -6,14 +6,10 @@
 
 namespace Gustavus\Concourse;
 
-require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
 use Gustavus\Gatekeeper\Gatekeeper,
   TemplatePageRequest;
-
-// start up error reporting for certain users
-TemplatePageRequest::start();
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -85,7 +81,9 @@ class Router
     if (empty($args)) {
       return call_user_func(array(new $handler[0], $handler[1]));
     }
-    return call_user_func(array(new $handler[0], $handler[1]), implode(', ', array_values(current($args))));
+    // pass the associative array created by analyzeSplitRoutes.
+    // This requires the handlers to take in one argument
+    return call_user_func(array(new $handler[0], $handler[1]), current($args));
 
   }
 
@@ -133,7 +131,7 @@ class Router
         continue;
       } else if (strpos($configRoute[$i], '{') !== false) {
         // routing has a parameter in the url
-        $return[$configRoute[$i]] = $route[$i];
+        $return[trim($configRoute[$i], '{}')] = $route[$i];
         continue;
       } else {
         return false;
