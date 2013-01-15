@@ -299,6 +299,40 @@ abstract class Controller
   }
 
   /**
+   * Renders the template with the specified error message
+   *
+   * @param  string $errorMessage
+   * @return string
+   */
+  protected function renderErrorPage($errorMessage = '')
+  {
+    $this->addError($errorMessage);
+    return $this->renderPage();
+  }
+
+  /**
+   * Adds error text to top of content
+   *
+   * @param string $errorMessage
+   * @return  void
+   */
+  protected function addError($errorMessage = '')
+  {
+    $this->content = '<p class="error">'. $errorMessage . '</p>' . $this->content;
+  }
+
+  /**
+   * Adds message text to content
+   *
+   * @param string $message
+   * @return  void
+   */
+  protected function addMessage($message = '')
+  {
+    $this->content .= '<p class="message">'. $message . '</p>';
+  }
+
+  /**
    * Checks to see if a user is logged in.
    * @return boolean true if the user is logged in, false otherwise
    */
