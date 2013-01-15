@@ -107,8 +107,9 @@ class RouterTest extends Test
 
   /**
    * @test
+   * @dataProvider findAdvancedRouteData
    */
-  public function findAdvancedRoute()
+  public function findAdvancedRoute($routes, $route, $expected)
   {
     $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array(['/', '/indexTwo/{id}'], '/indexTwo/23'));
     $this->assertSame(['/indexTwo/{id}' => ['id' => '23']], $actual);
@@ -127,24 +128,44 @@ class RouterTest extends Test
   }
 
   /**
-   * @test
+   * FindAdvancedRoute data
+   * @return array
    */
-  public function analyzeSplitRoutes()
+  public function findAdvancedRouteData()
   {
-    $actual = $this->call('\Gustavus\Concourse\Router', 'analyzeSplitRoutes', array(['indexTwo', '{id}'], ['indexTwo', '23']));
-    $this->assertSame(['id' => '23'], $actual);
+    return array(
+      array(['/', '/indexTwo/{id}'], '/indexTwo/23', ['/indexTwo/{id}' => ['id' => '23']]),
+      array(['/', '/indexTwo/id'], '/indexTwo/id', ['/indexTwo/id' => []]),
+      array(['/', '/indexTwo/id'], '/indexTwo/id/23', false),
+      array(['/', '/indexTwo/id', '/indexTwo/id/{id}'], '/indexTwo/id/23', ['/indexTwo/id/{id}' => ['id' => '23']]),
+      array(['/', '/indexTwo/id', '/indexTwo/id/id'], '/indexTwo/id/23', false),
+    );
+  }
 
-    $actual = $this->call('\Gustavus\Concourse\Router', 'analyzeSplitRoutes', array(['indexTwo', 'id', '{id2}'], ['indexTwo', '23', '25']));
-    $this->assertFalse($actual);
+  /**
+   * @test
+   * @dataProvider analyzeSplitRoutesData
+   */
+  public function analyzeSplitRoutes($configRoute, $route, $expected)
+  {
+    $actual = $this->call('\Gustavus\Concourse\Router', 'analyzeSplitRoutes', array($configRoute, $route));
+    $this->assertSame($expected, $actual);
+  }
 
-    $actual = $this->call('\Gustavus\Concourse\Router', 'analyzeSplitRoutes', array(['indexTwo', '{id}', '{id2}'], ['indexTwo', '23', '25']));
-    $this->assertSame(['id' => '23', 'id2' => '25'], $actual);
-
-    $actual = $this->call('\Gustavus\Concourse\Router', 'analyzeSplitRoutes', array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', '25']));
-    $this->assertFalse($actual);
-
-    $actual = $this->call('\Gustavus\Concourse\Router', 'analyzeSplitRoutes', array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2']));
-    $this->assertSame(['id' => '23'], $actual);
+  /**
+   * AnalyzeSplitRoutesData
+   * @return  array
+   */
+  public function analyzeSplitRoutesData()
+  {
+    return array(
+      array(['indexTwo', '{id}'], ['indexTwo', '23'], ['id' => '23']),
+      array(['indexTwo', 'id', '{id2}'], ['indexTwo', '23', '25'], false),
+      array(['indexTwo', '{id}', '{id2}'], ['indexTwo', '23', '25'], ['id' => '23', 'id2' => '25']),
+      array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', '25'], false),
+      array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
+      array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
+    );
   }
 
   /**
