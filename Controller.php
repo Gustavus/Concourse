@@ -94,7 +94,7 @@ abstract class Controller
    * Sets the page title.
    *
    * @param string $title the new page title
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setTitle($title)
   {
@@ -116,7 +116,7 @@ abstract class Controller
    * Sets the page subtitle.
    *
    * @param string $subtitle the new page subtitle
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setSubtitle($subtitle)
   {
@@ -138,11 +138,23 @@ abstract class Controller
    * Sets the page content.
    *
    * @param string $content the new page content
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setContent($content)
   {
     $this->content = $content;
+    return $this;
+  }
+
+  /**
+   * Adds to the page content.
+   *
+   * @param string $content the new page content
+   * @return $this
+   */
+  protected function addContent($content)
+  {
+    $this->content .= $content;
     return $this;
   }
 
@@ -160,7 +172,7 @@ abstract class Controller
    * Sets the focus box HTML on the page.
    *
    * @param string $focusBox the new page focusbox content.
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setFocusBox($focusBox)
   {
@@ -182,7 +194,7 @@ abstract class Controller
    * Sets the stylesheets HTML on the page.
    *
    * @param string $stylesheets the new stylesheets HTML on the page
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setStylesheets($stylesheets)
   {
@@ -204,7 +216,7 @@ abstract class Controller
    * Sets the javascript to be added on the page.
    *
    * @param string $javascripts the new javascripts HTML on the page
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setJavascripts($javascripts)
   {
@@ -223,7 +235,7 @@ abstract class Controller
    * Sets the local navigation
    *
    * @param string|array $localNavigation Either an array for \Gustavus\LocalNavigation/ItemFactory, or string of html
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setLocalNavigation($localNavigation)
   {
@@ -245,7 +257,7 @@ abstract class Controller
    * Sets the template preferences for the page.
    *
    * @param array $templatePreferences the new TemplatePreferences
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function setTemplatePreferences(array $templatePreferences)
   {
@@ -257,7 +269,7 @@ abstract class Controller
    * Adds preferences to the template preferences for the page.
    *
    * @param array $templatePreferences the additional TemplatePreferences
-   * @return $this to enable method chaining
+   * @return $this
    */
   protected function addTemplatePreferences(array $templatePreferences)
   {
