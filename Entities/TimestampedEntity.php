@@ -37,6 +37,7 @@ abstract class TimestampedEntity
    * Sets created and modified right before this object is first persisted to the database.
    *
    * @PrePersist
+   * @return  void
    */
   abstract public function setCreatedValue();
 
@@ -44,6 +45,7 @@ abstract class TimestampedEntity
    * Sets modified right before this object is changed in the database.
    *
    * @PreUpdate
+   * @return  void
    */
   abstract public function setModifiedValue();
 }
