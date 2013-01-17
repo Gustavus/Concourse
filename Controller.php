@@ -417,4 +417,16 @@ abstract class Controller
   {
     return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
   }
+
+  /**
+   * Redirects to the specified path
+   *
+   * @param  string $path path to redirect to.
+   * @return void
+   */
+  protected function redirect($path = '/')
+  {
+    $_POST = null;
+    header("Location: " . $path, true, 302);
+  }
 }
