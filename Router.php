@@ -20,11 +20,13 @@ use Gustavus\Gatekeeper\Gatekeeper,
 class Router
 {
   /**
-   * Handles the requested route and calls the respective controller
+   * Handles the requested route and calls the respective controller<p/>
    * VisibleTo Options:
+   * <code>
    *   array[0] = application name
    *   array[1] = permissions array
    *   array[2] = login level
+   * </code>
    *
    * Example visibleTo:
    * <code>
