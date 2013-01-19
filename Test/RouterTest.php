@@ -2,6 +2,7 @@
 /**
  * @package Concourse
  * @subpackage Test
+ * @author  Billy Visto
  */
 
 namespace Gustavus\Concourse;
@@ -16,6 +17,7 @@ use Gustavus\Test\Test,
 /**
  * @package Concourse
  * @subpackage Test
+ * @author  Billy Visto
  */
 class RouterTest extends Test
 {

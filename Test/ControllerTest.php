@@ -2,6 +2,7 @@
 /**
  * @package Concourse
  * @subpackage Test
+ * @author  Billy Visto
  */
 
 namespace Gustavus\Concourse;
@@ -17,6 +18,7 @@ use Gustavus\Test\Test,
 /**
  * @package Concourse
  * @subpackage Test
+ * @author  Billy Visto
  */
 class ControllerTest extends Test
 {
@@ -220,5 +222,43 @@ class ControllerTest extends Test
   {
     // will never be set from cli
     $this->assertSame('', $this->controller->getMethod());
+  }
+
+  /**
+   * @test
+   */
+  public function addError()
+  {
+    $this->controller->setContent('');
+    $this->controller->addError('Help!');
+    $this->assertSame('<p class="error">Help!</p>', $this->controller->getContent());
+  }
+
+  /**
+   * @test
+   */
+  public function addMessage()
+  {
+    $this->controller->setContent('');
+    $this->controller->addMessage('Help!');
+    $this->assertSame('<p class="message">Help!</p>', $this->controller->getContent());
+  }
+
+  /**
+   * @test
+   */
+  public function addMessageToTop()
+  {
+    $this->controller->addMessageToTop('Help!');
+    $this->assertSame('<p class="message">Help!</p>' . $this->controllerProperties['content'], $this->controller->getContent());
+  }
+
+  /**
+   * @test
+   */
+  public function addContent()
+  {
+    $this->controller->addContent('Help!');
+    $this->assertSame($this->controllerProperties['content'] . 'Help!', $this->controller->getContent());
   }
 }
