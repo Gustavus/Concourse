@@ -284,6 +284,15 @@ abstract class Controller
    */
   protected function renderPage()
   {
+    // look for session messages.
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    if (isset($_SESSION['concourseMessage'])) {
+      $this->addMessageToTop($_SESSION['concourseMessage']);
+      unset($_SESSION['concourseMessage']);
+    }
+
     $args = [
       'title'           => $this->getTitle(),
       'subtitle'        => $this->getSubtitle(),
@@ -345,6 +354,17 @@ abstract class Controller
   }
 
   /**
+   * Adds message text to the top of the content
+   *
+   * @param string $message
+   * @return  void
+   */
+  protected function addMessageToTop($message = '')
+  {
+    $this->content = '<p class="message">'. $message . '</p>' . $this->content;
+  }
+
+  /**
    * Checks to see if a user is logged in.
    * @return boolean true if the user is logged in, false otherwise
    */
@@ -375,7 +395,7 @@ abstract class Controller
 
   /**
    * Gets the Campus\Person of the logged in user.
-   * @return Person|null returns the logged in Person if found. null otherwise
+   * @return Campus\Person|null returns the logged in Person if found. null otherwise
    */
   protected function getLoggedInPerson()
   {
@@ -427,6 +447,19 @@ abstract class Controller
   protected function redirect($path = '/')
   {
     $_POST = null;
-    header("Location: " . $path, true, 302);
+    header('Location: ' . $path, true, 302);
+  }
+
+  /**
+   * Redirects user to new path with the specified message to be displayed if it goes through the router
+   *
+   * @param  string $path    path to redirect to.
+   * @param  string $message message to display on redirect
+   * @return void
+   */
+  protected function redirectWithMessage($path = '/', $message = '')
+  {
+    $_SESSION['concourseMessage'] = $message;
+    $this->redirect($path);
   }
 }
