@@ -16,7 +16,7 @@ use Gustavus\FormBuilder\FormItem;
  * @subpackage Forms
  * @author  Billy Visto
  */
-class FormType extends FormItem
+abstract class FormType extends FormItem
 {
   protected $items = [];
   protected $itemMap = [];
@@ -27,9 +27,6 @@ class FormType extends FormItem
    *
    * @param string $name
    *  The name to use for this element.
-   *
-   * @throws \InvalidArgumentException
-   *  If $name or $type is null, empty, not a string or not well-formed.
    */
   public function __construct($name)
   {
@@ -132,6 +129,8 @@ class FormType extends FormItem
   }
 
   /**
+   * @throws  \BadFunctionCallException If the callable is not callable
+   *
    * {@inheritDoc}
    */
   public function populateItem(&$data)
@@ -157,20 +156,63 @@ class FormType extends FormItem
         $valid = true;
         foreach ($properties as $key => $property) {
           if (is_array($property)) {
-            $callable = $property;
+            $callables = $property;
             $property = $key;
           }
-          $getData = 'get' . ucfirst($property);
 
-          $value   = $data->$getData();
-          if (isset($callable) && !empty($value)) {
-            if (count($callable) > 1) {
-              $value = call_user_func([$value, $callable[0]], $callable[1]);
-            } else {
-              $value = call_user_func([$value, $callable[0]]);
+          $getData = 'get' . ucfirst($property);
+          if (is_callable([$data, $getData])) {
+            $value = $data->$getData();
+          }
+          if (isset($callables[0])) {
+            // the get calls will be the first index
+            $callables = $callables[0];
+
+            // if (is_array(current($callables)) && !is_array(current(current($callables)))) {
+            //   $callables = [$callables];
+            // }
+            // if (!is_array(current($callables))) {
+            //   if (!current($callables)) {
+            //     // the app has specified to not call a callable
+            //     continue;
+            //   }
+            //   // function without any arguments, we need to wrap this in an array
+            //   $callables = [$callables];
+            // }
+            // for ($i = 0; $i < count($callables); ++$i) {
+            //   $callable = $callables[$i];
+            $i = 0;
+            foreach ($callables as $callableKey => $callable) {
+              if (is_string($callableKey)) {
+                // we have a callable with parameters
+                $arguments = $callable;
+                $callable  = $callableKey;
+              }
+              if (!$callable) {
+                // no callable to try to call
+                continue;
+              }
+              if (!isset($value) && $i === 0) {
+                // first time through. This will be called on the data
+                $value = $data;
+              }
+              if (!is_callable([$value, $callable])) {
+                throw new \BadFunctionCallException('The callable "' . $callable . '" could not be called on ' . getType($value));
+              }
+              if (isset($arguments)) {
+                $value = call_user_func([$value, $callable], $arguments);
+                unset($arguments);
+              } else {
+                $value = call_user_func([$value, $callable]);
+              }
+              ++$i;
             }
+            unset($callables);
+          } else if (!isset($value)) {
+            throw new \UnexpectedValueException('The property "' . $property . '" does not appear to have a getter for ' . $objectType);
           }
           $valid   &= $this->itemMap[$property]->populateItem($value);
+          unset($value);
         }
         return (bool) $valid;
       }
@@ -186,6 +228,8 @@ class FormType extends FormItem
   /**
    * Populates object with form data
    *
+   * @throws  \BadFunctionCallException If the callable is not callable
+   *
    * @param  mixed &$data Object to populate data to
    * @return boolean
    */
@@ -195,16 +239,101 @@ class FormType extends FormItem
       if ($data instanceof $objType) {
         foreach ($properties as $key => $property) {
           if (is_array($property)) {
-            $property = $key;
+            $callables = $property;
+            $property  = $key;
           }
-          $value   = $this->itemMap[$property]->getValue();
+          if ($property == 'units') {
+            var_dump('here', $property, $key);
+            exit;
+          }
+          if (isset($callables[1])) {
+            // the set calls will be the second index
+            $callables = $callables[1];
 
-          $setProp = 'set' . ucfirst($property);
-          $data->$setProp($value);
+            $getData = 'get' . ucfirst($property);
+            if (is_callable([$data, $getData])) {
+              $value   = $data->$getData();
+            }
+            if (empty($value)) {
+              // property doesn't exist. Must be a new one. Let's try setting it.
+              $setData = 'set' . ucfirst($property);
+              if (is_callable([$data, $setData])) {
+                $data->$setData($this->itemMap[$property]->getValue());
+                continue;
+              }
+            }
+
+            // we know this is set because property got renamed to callables
+
+            // if (is_array(current($callables)) && !is_array(current(current($callables)))) {
+            //   // function with arguments, but without an array wrapping the functions.
+            //   $callables = [$callables];
+            // }
+            // if (!is_array(current($callables))) {
+            //   // function without any arguments, we need to wrap this in an array
+            //   $callables = [$callables];
+            // }
+            // for ($i = 0; $i < count($callables); ++$i) {
+            //   $callable = $callables[$i];
+            $i = 0;
+            foreach ($callables as $callableKey => $callable) {
+              if (is_string($callableKey)) {
+                // we have a callable with parameters
+                $arguments = $callable;
+                $callable  = $callableKey;
+              }
+              if (!$callable) {
+                // no callable to try to call
+                continue;
+              }
+              if (!isset($value) && $i === 0) {
+                // first time through. This will be called on the data
+                $value = $data;
+              }
+
+              if (!is_callable([$value, $callable])) {
+                // check to see if we can fallback to the data
+                if (is_callable([$data, $callable])) {
+                  $value = $data;
+                } else {
+                  throw new \BadFunctionCallException('The callable "' . $callable . '" could not be called' );
+                }
+              }
+              if (isset($arguments)) {
+                $value = call_user_func([$value, $callable], $arguments);
+              } else {
+                if ($i + 1 === count($callables)) {
+                  // this is the last callable to be called. These functions should accept one parameter.
+                  call_user_func([$value, $callable], $this->itemMap[$property]->getValue());
+                  continue;
+                }
+                $value = call_user_func([$value, $callable]);
+              }
+            }
+            unset($callables);
+          } else {
+            $setProp = 'set' . ucfirst($property);
+            if (!is_callable([$data, $setProp])) {
+              throw new \BadFunctionCallException('The property "' . $property . '" does not have a callable "' . $setProp . '" function' );
+            }
+            $data->$setProp($this->itemMap[$property]->getValue());
+          }
         }
         return true;
       }
     }
     return false;
   }
+
+  /**
+   * Gets the mapping information specified by the itemMapping array<p/>
+   * Returns array with key of objectType and value as an array of properties to map. <p/>
+   *   Properties can request callable functions as their value.
+   *     These callable functions must be contained in an array with
+   *     the first index being the the get methods and the second
+   *     being the set methods
+   *
+   * @return array Array of item mapping
+   */
+  abstract protected function getItemMapping();
 }
