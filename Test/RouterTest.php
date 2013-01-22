@@ -113,20 +113,8 @@ class RouterTest extends Test
    */
   public function findAdvancedRoute($routes, $route, $expected)
   {
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array(['/', '/indexTwo/{id}'], '/indexTwo/23'));
-    $this->assertSame(['/indexTwo/{id}' => ['id' => '23']], $actual);
-
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array(['/', '/indexTwo/id'], '/indexTwo/id'));
-    $this->assertSame(['/indexTwo/id' => []], $actual);
-
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array(['/', '/indexTwo/id'], '/indexTwo/id/23'));
-    $this->assertFalse($actual);
-
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array(['/', '/indexTwo/id', '/indexTwo/id/{id}'], '/indexTwo/id/23'));
-    $this->assertSame(['/indexTwo/id/{id}' => ['id' => '23']], $actual);
-
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array(['/', '/indexTwo/id', '/indexTwo/id/id'], '/indexTwo/id/23'));
-    $this->assertFalse($actual);
+    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($routes, $route));
+    $this->assertSame($expected, $actual);
   }
 
   /**
@@ -136,6 +124,7 @@ class RouterTest extends Test
   public function findAdvancedRouteData()
   {
     return array(
+      array(['/', '/indexTwo/{id}'], '/', ['/' => []]),
       array(['/', '/indexTwo/{id}'], '/indexTwo/23', ['/indexTwo/{id}' => ['id' => '23']]),
       array(['/', '/indexTwo/id'], '/indexTwo/id', ['/indexTwo/id' => []]),
       array(['/', '/indexTwo/id'], '/indexTwo/id/23', false),
@@ -161,6 +150,9 @@ class RouterTest extends Test
   public function analyzeSplitRoutesData()
   {
     return array(
+      array(['{id}'], [''], false),
+      array(['menu'], ['menu'], []),
+      array([''], [''], []),
       array(['indexTwo', '{id}'], ['indexTwo', '23'], ['id' => '23']),
       array(['indexTwo', 'id', '{id2}'], ['indexTwo', '23', '25'], false),
       array(['indexTwo', '{id}', '{id2}'], ['indexTwo', '23', '25'], ['id' => '23', 'id2' => '25']),

@@ -155,8 +155,13 @@ class Router
         continue;
       } else if (strpos($configRoute[$i], '{') !== false) {
         // routing has a parameter in the url
-        $return[trim($configRoute[$i], '{}')] = $route[$i];
-        continue;
+        if (empty($route[$i])) {
+          // we don't want to keep going
+          return false;
+        } else {
+          $return[trim($configRoute[$i], '{}')] = $route[$i];
+          continue;
+        }
       } else {
         return false;
       }
