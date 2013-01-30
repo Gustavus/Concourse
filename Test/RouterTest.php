@@ -151,6 +151,7 @@ class RouterTest extends Test
   {
     return array(
       array(['{id}'], [''], false),
+      array(['{id}'], ['a'], ['id' => 'a']),
       array(['menu'], ['menu'], []),
       array([''], [''], []),
       array(['indexTwo', '{id}'], ['indexTwo', '23'], ['id' => '23']),

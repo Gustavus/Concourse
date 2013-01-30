@@ -68,10 +68,13 @@ class Router
       return Router::runHandler($routingConfig[key($advancedRoute)], $advancedRoute);
     } else {
       // route not found
+      // we don't want the auxbox to be displayed
+      $GLOBALS['templatePreferences']['auxBox'] = false;
       header('HTTP/1.0 404 Not Found');
       ob_start();
 
       $_SERVER['REDIRECT_STATUS'] = 404;
+      $_SERVER['REDIRECT_URL']    = false;
       include '/cis/www/errorPages/error.php';
 
       ob_end_flush();
