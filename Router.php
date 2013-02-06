@@ -52,6 +52,7 @@ class Router
    */
   public static function handleRequest($routingConfig, $route)
   {
+    TemplatePageRequest::initExtremeMaintenance();
     if (!is_array($routingConfig)) {
       $routingConfig = include($routingConfig);
     }
