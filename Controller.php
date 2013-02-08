@@ -462,4 +462,25 @@ abstract class Controller
     $_SESSION['concourseMessage'] = $message;
     $this->redirect($path);
   }
+
+  /**
+   * Checks to see if the logged in user has permissions in gatekeeper
+   *
+   * @param  string $applicationName Application to check permissions in
+   * @param  array|string $permissions  permissions to check
+   * @param  string $logInLevel      Gatekeeper's login level
+   * @return boolean Whether the user has permissions or not
+   */
+  protected function checkPermissions($applicationName, $permissions, $logInLevel = null)
+  {
+    assert('is_array($permissions) || is_string($permissions)');
+
+    if ($logInLevel === null) {
+      $logInLevel = Gatekeeper::LOG_IN_LEVEL_ALL;
+    }
+    if (is_string($permissions)) {
+      $permissions = [$permissions];
+    }
+    return Gatekeeper::checkPermissions($applicationName, $logInLevel, $permissions);
+  }
 }

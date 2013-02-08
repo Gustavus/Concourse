@@ -261,4 +261,16 @@ class ControllerTest extends Test
     $this->controller->addContent('Help!');
     $this->assertSame($this->controllerProperties['content'] . 'Help!', $this->controller->getContent());
   }
+
+  /**
+   * @test
+   */
+  public function checkPermissions()
+  {
+    $this->assertFalse($this->controller->checkPermissions('menu', 'admin'));
+
+    $this->authenticate('bvisto');
+    $this->assertTrue($this->controller->checkPermissions('menu', ['manager']));
+    $this->unAuthenticate();
+  }
 }
