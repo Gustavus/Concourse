@@ -24,7 +24,7 @@ class Router
    * VisibleTo Options:
    * <code>
    *   array[0] = application name
-   *   array[1] = permissions array
+   *   array[1] = permissions array|string
    *   array[2] = login level
    * </code>
    *
@@ -185,6 +185,10 @@ class Router
       $applicationName = isset($routeConfig['visibleTo'][0]) ? $routeConfig['visibleTo'][0] : '';
       $permissions     = isset($routeConfig['visibleTo'][1]) ? $routeConfig['visibleTo'][1] : [];
       $loginLevel      = isset($routeConfig['visibleTo'][2]) ? $routeConfig['visibleTo'][2] : Gatekeeper::LOG_IN_LEVEL_ALL;
+
+      if (is_string($permissions)) {
+        $permissions = [$permissions];
+      }
 
       if (Gatekeeper::checkPermissions($applicationName, $loginLevel, $permissions)) {
         return true;

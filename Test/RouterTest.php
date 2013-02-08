@@ -182,6 +182,22 @@ class RouterTest extends Test
   /**
    * @test
    */
+  public function userCanAccessPageStringPermissions()
+  {
+    $this->routingConfig['/indexTwo/{id}']['visibleTo'] = [
+        'studentOrgs',
+        Gatekeeper::PERMISSION_ANONYMOUS,
+    ];
+
+    $this->authenticate('bvisto');
+    $actual = $this->call('\Gustavus\Concourse\Router', 'userCanAccessPage', array($this->routingConfig['/indexTwo/{id}']));
+    $this->assertTrue($actual);
+    $this->unAuthenticate();
+  }
+
+  /**
+   * @test
+   */
   public function userCanAccessPageLoginLevel()
   {
     $this->routingConfig['/indexTwo/{id}']['visibleTo'] = [
