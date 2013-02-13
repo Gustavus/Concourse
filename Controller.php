@@ -418,10 +418,14 @@ abstract class Controller
    *
    * @param  string $applicationPath full path to the application
    * @param  string $dbName          name of the database in the config file
+   * @param  boolean $new            true if we want a new instance.
    * @return Doctrine\ORM\EntityManager
    */
-  protected function getEM($applicationPath, $dbName = '')
+  protected function getEM($applicationPath, $dbName = '', $new = false)
   {
+    if ($new) {
+      return EntityManager::getEntityManager($applicationPath, null, $dbName);
+    }
     if (!isset(self::$em)) {
       self::$em = EntityManager::getEntityManager($applicationPath, null, $dbName);
     }
