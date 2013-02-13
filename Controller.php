@@ -463,6 +463,9 @@ abstract class Controller
    */
   protected function redirectWithMessage($path = '/', $message = '')
   {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
     $_SESSION['concourseMessage'] = $message;
     $this->redirect($path);
   }
