@@ -292,6 +292,10 @@ abstract class Controller
       $this->addMessageToTop($_SESSION['concourseMessage']);
       unset($_SESSION['concourseMessage']);
     }
+    if (isset($_SESSION['concourseErrorMessage'])) {
+      $this->addErrorToTop($_SESSION['concourseErrorMessage']);
+      unset($_SESSION['concourseErrorMessage']);
+    }
 
     $args = [
       'title'           => $this->getTitle(),
@@ -315,7 +319,7 @@ abstract class Controller
    */
   protected function renderTemplate($view, array $parameters = array())
   {
-    $this->setContent(TwigFactory::renderTwigFilesystemTemplate($view, $parameters, \Config::isBeta()));
+    $this->addContent(TwigFactory::renderTwigFilesystemTemplate($view, $parameters, \Config::isBeta()));
     return $this->renderPage();
   }
 
@@ -332,12 +336,23 @@ abstract class Controller
   }
 
   /**
-   * Adds error text to top of content
+   * Adds error text to content
    *
    * @param string $errorMessage
    * @return  void
    */
   protected function addError($errorMessage = '')
+  {
+    $this->content .= '<p class="error">'. $errorMessage . '</p>';
+  }
+
+  /**
+   * Adds error text to top of content
+   *
+   * @param string $errorMessage
+   * @return  void
+   */
+  protected function addErrorToTop($errorMessage = '')
   {
     $this->content = '<p class="error">'. $errorMessage . '</p>' . $this->content;
   }
@@ -467,6 +482,22 @@ abstract class Controller
       session_start();
     }
     $_SESSION['concourseMessage'] = $message;
+    $this->redirect($path);
+  }
+
+  /**
+   * Redirects user to new path with the specified error message to be displayed if it goes through the router
+   *
+   * @param  string $path    path to redirect to.
+   * @param  string $message message to display on redirect
+   * @return void
+   */
+  protected function redirectWithError($path = '/', $message = '')
+  {
+    if (!isset($_SESSION)) {
+      session_start();
+    }
+    $_SESSION['concourseErrorMessage'] = $message;
     $this->redirect($path);
   }
 
