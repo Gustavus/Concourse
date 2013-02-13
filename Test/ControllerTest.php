@@ -229,9 +229,19 @@ class ControllerTest extends Test
    */
   public function addError()
   {
-    $this->controller->setContent('');
+    $this->controller->setContent('arst');
     $this->controller->addError('Help!');
-    $this->assertSame('<p class="error">Help!</p>', $this->controller->getContent());
+    $this->assertSame('arst<p class="error">Help!</p>', $this->controller->getContent());
+  }
+
+  /**
+   * @test
+   */
+  public function addErrorToTop()
+  {
+    $this->controller->setContent('arst');
+    $this->controller->addErrorToTop('Help!');
+    $this->assertSame('<p class="error">Help!</p>arst', $this->controller->getContent());
   }
 
   /**

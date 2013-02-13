@@ -319,7 +319,7 @@ abstract class Controller
    */
   protected function renderTemplate($view, array $parameters = array())
   {
-    $this->addContent(TwigFactory::renderTwigFilesystemTemplate($view, $parameters, \Config::isBeta()));
+    $this->addContent(TwigFactory::renderTwigFilesystemTemplate($view, $parameters));
     return $this->renderPage();
   }
 
