@@ -20,6 +20,12 @@ use Gustavus\Gatekeeper\Gatekeeper,
 class Router
 {
   /**
+   * Header response code to use if the route isn't found
+   * @var integer
+   */
+  private static $routeNotFoundCode = 404;
+
+  /**
    * Handles the requested route and calls the respective controller<p/>
    * VisibleTo Options:
    * <code>
@@ -41,6 +47,10 @@ class Router
    *     ),
    *     '/indexTwo/{id}' => array(
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
+   *         'visibleTo' => array('template', array('admin'))
+   *     ),
+   *     '/indexTwo/item/{id=\d+}' => array(
+   *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:showItem',
    *         'visibleTo' => array('template', array('admin'))
    *     ),
    *   );
@@ -69,18 +79,37 @@ class Router
       return Router::runHandler($routingConfig[key($advancedRoute)], $advancedRoute);
     } else {
       // route not found
-      // we don't want the auxbox to be displayed
-      $GLOBALS['templatePreferences']['auxBox'] = false;
-      header('HTTP/1.0 404 Not Found');
-      ob_start();
-
-      $_SERVER['REDIRECT_STATUS'] = 404;
-      $_SERVER['REDIRECT_URL']    = false;
-      include '/cis/www/errorPages/error.php';
-
-      ob_end_flush();
-      exit;
+      return Router::handleRouteNotFound();
     }
+  }
+
+  /**
+   * Handles what to do if the route cannot be found.
+   *   It will show the errorPage with either of status of 404 normally, or 400 if a regex failed.
+   *
+   * @return void
+   */
+  private static function handleRouteNotFound()
+  {
+    if (self::$routeNotFoundCode === 400) {
+      $header = 'HTTP/1.0 400 Bad Request';
+      $_SERVER['REDIRECT_STATUS'] = 400;
+    } else {
+      $header = 'HTTP/1.0 404 Not Found';
+      $_SERVER['REDIRECT_STATUS'] = 404;
+    }
+
+    // we don't want the auxbox to be displayed
+    $GLOBALS['templatePreferences']['auxBox'] = false;
+    header($header);
+    ob_start();
+
+    //$_SERVER['REDIRECT_STATUS'] = 404;
+    $_SERVER['REDIRECT_URL']    = false;
+    include '/cis/www/errorPages/error.php';
+
+    ob_end_flush();
+    exit;
   }
 
   /**
@@ -98,7 +127,6 @@ class Router
 
       $_SERVER['REDIRECT_STATUS'] = 403;
       $_SERVER['REDIRECT_URL'] = $_SERVER['HTTP_REFERER'];
-      \Gustavus\Extensibility\Filters::add('localNavigation', 'localNavigation');
       include_once('/cis/www/errorPages/error.php');
 
       ob_end_flush();
@@ -163,14 +191,42 @@ class Router
           // we don't want to keep going
           return false;
         } else {
-          $return[trim($configRoute[$i], '{}')] = $route[$i];
-          continue;
+          $trimmedConfigRoute = trim($configRoute[$i], '{}');
+          if (($key = Router::checkRouteRegex($trimmedConfigRoute, $route[$i])) !== false) {
+            // it matches
+            $return[$key] = $route[$i];
+            continue;
+          } else {
+            // no match.
+            // set the response code in case we don't find a route later on.
+            self::$routeNotFoundCode = 400;
+            return false;
+          }
         }
       } else {
         return false;
       }
     }
     return $return;
+  }
+
+  /**
+   * Checks to see if the route has a regex associated with it or not. If it does, it will check the requested route against it.
+   *
+   * @param  string $configRoute The piece of the configuration route in question
+   * @param  string $currRoute   The piece of the requested route
+   * @return boolean|string      False if the route doesn't match the regex. The config route without the regex attached if it is valid
+   */
+  private static function checkRouteRegex($configRoute, $currRoute)
+  {
+    if (($pos = strpos($configRoute, '=')) !== false) {
+      $regex = substr($configRoute, $pos + 1);
+      if (preg_match("`$regex`", $currRoute) === 1) {
+        return substr($configRoute, 0, $pos);
+      }
+      return false;
+    }
+    return $configRoute;
   }
 
   /**

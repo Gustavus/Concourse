@@ -160,7 +160,30 @@ class RouterTest extends Test
       array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', '25'], false),
       array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
       array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
+      array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
+      array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', 'hello', 'id2'], false),
     );
+  }
+
+  /**
+   * @test
+   * @dataProvider checkRouteRegexData
+   */
+  public function checkRouteRegex($expected, $configRoute, $route)
+  {
+    $this->assertSame($expected, $this->call('\Gustavus\Concourse\Router', 'checkRouteRegex', array($configRoute, $route)));
+  }
+
+  /**
+   * checkRouteRegexData
+   * @return array
+   */
+  public function checkRouteRegexData()
+  {
+    return [
+      ['id', 'id=\d+', '23'],
+      [false, 'id=\d+', 'hello'],
+    ];
   }
 
   /**
