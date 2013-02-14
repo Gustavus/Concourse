@@ -189,6 +189,22 @@ class RouterTest extends Test
   /**
    * @test
    */
+  public function findAdvancedRouteCheckingResponseCode()
+  {
+    $configRoute = ['/', '/indexTwo/{id=\d+}', '/indexTwo/test/{id}'];
+    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
+    $this->assertFalse($actual);
+    $this->assertSame(400, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
+
+    $configRoute = ['/', '/indexTwo/{id=\d+}', '/indexTwo/{id=\w+}'];
+    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
+    $this->assertSame(['/indexTwo/{id=\w+}' => ['id' => 'help']], $actual);
+    $this->assertSame(404, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
+  }
+
+  /**
+   * @test
+   */
   public function userCanAccessPage()
   {
     $this->routingConfig['/indexTwo/{id}']['visibleTo'] = [
