@@ -196,7 +196,10 @@ class RouterTest extends Test
     $this->assertFalse($actual);
     $this->assertSame(400, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
 
-    $configRoute = ['/', '/indexTwo/{id=\d+}', '/indexTwo/{id=\w+}'];
+    // reset this
+    $this->set('\Gustavus\Concourse\Router', 'routeNotFoundCode', 404);
+
+    $configRoute = ['/', '/indexTwo/{id=\w+}', '/indexTwo/{id=\d+}'];
     $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
     $this->assertSame(['/indexTwo/{id=\w+}' => ['id' => 'help']], $actual);
     $this->assertSame(404, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));

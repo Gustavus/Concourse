@@ -207,9 +207,6 @@ class Router
         return false;
       }
     }
-    // a route has been found.
-    // we want to make sure we use 404 if a route up the chain didn't meet the regex.
-    self::$routeNotFoundCode = 404;
     return $return;
   }
 
