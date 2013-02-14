@@ -124,6 +124,7 @@ class RouterTest extends Test
   public function findAdvancedRouteData()
   {
     return array(
+      array(['/', '/indexTwo/id', '/indexTwo/id/{id=\d+}'], '/indexTwo/id/2.5', false),
       array(['/', '/indexTwo/{id}'], '/', ['/' => []]),
       array(['/', '/indexTwo/{id}'], '/indexTwo/23', ['/indexTwo/{id}' => ['id' => '23']]),
       array(['/', '/indexTwo/id'], '/indexTwo/id', ['/indexTwo/id' => []]),
@@ -161,6 +162,7 @@ class RouterTest extends Test
       array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
       array(['indexTwo', '{id}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
       array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
+      array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', '2.5', 'id2'], false),
       array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', 'hello', 'id2'], false),
     );
   }
@@ -182,6 +184,7 @@ class RouterTest extends Test
   {
     return [
       ['id', 'id=\d+', '23'],
+      [false, 'id=\d+', '2.5'],
       [false, 'id=\d+', 'hello'],
     ];
   }

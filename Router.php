@@ -221,7 +221,7 @@ class Router
   {
     if (($pos = strpos($configRoute, '=')) !== false) {
       $regex = substr($configRoute, $pos + 1);
-      if (preg_match("`$regex`", $currRoute) === 1) {
+      if (preg_match("`^{$regex}$`", $currRoute) === 1) {
         return substr($configRoute, 0, $pos);
       }
       return false;
