@@ -212,7 +212,13 @@ class ControllerTest extends Test
    */
   public function getEM()
   {
-    $this->assertInstanceOf('Doctrine\ORM\EntityManager', $this->controller->getEM('/cis/lib/Gustavus/Menu', 'menu'));
+    $em = $this->controller->getEM('/cis/lib/Gustavus/Menu', 'menu');
+    $this->assertInstanceOf('Doctrine\ORM\EntityManager', $em);
+
+    $newEm = $this->controller->getEM('/cis/lib/Gustavus/Menu', 'menu', true);
+    $this->assertInstanceOf('Doctrine\ORM\EntityManager', $newEm);
+
+    $this->assertNotSame($em, $newEm);
   }
 
   /**
@@ -282,5 +288,71 @@ class ControllerTest extends Test
     $this->authenticate('bvisto');
     $this->assertTrue($this->controller->checkPermissions('menu', ['manager']));
     $this->unAuthenticate();
+  }
+
+  /**
+   * @test
+   */
+  public function renderPage()
+  {
+    $this->controller->setContent('helloarst');
+    $actual = $this->controller->renderPage();
+    $this->assertTrue(strpos($actual['content'], 'helloarst') !== false);
+  }
+
+  /**
+   * @test
+   */
+  public function setSessionMessage()
+  {
+    $this->controller->setSessionMessage('testMessage');
+    $this->controller->setSessionMessage('testErrorMessage', true);
+
+    $actual = $this->controller->renderPage();
+    $messagePos = strpos($actual['content'], '<p class="message">testMessage');
+    $errorMessagePos = strpos($actual['content'], '<p class="error">testErrorMessage');
+
+    $this->assertTrue($errorMessagePos !== false);
+    $this->assertTrue($messagePos !== false);
+    $this->assertTrue($errorMessagePos < $messagePos);
+  }
+
+  /**
+   * @test
+   */
+  public function redirectWithMessage()
+  {
+    $this->controller->redirectWithMessage('/', 'someTestMessage');
+    $actual = $this->controller->renderPage();
+    $this->assertTrue(strpos($actual['content'], '<p class="message">someTestMessage') !== false);
+  }
+
+  /**
+   * @test
+   */
+  public function redirectWithError()
+  {
+    $this->controller->redirectWithError('/', 'someTestErrorMessage');
+    $actual = $this->controller->renderPage();
+    $this->assertTrue(strpos($actual['content'], '<p class="error">someTestErrorMessage') !== false);
+  }
+
+  /**
+   * @test
+   */
+  public function renderTemplate()
+  {
+    $actual = $this->controller->renderTemplate('/cis/lib/Gustavus/Concourse/Test/testView.html.twig', ['testParam' => 'TestingTemplate']);
+    $this->assertTrue(strpos($actual['content'], 'TestingTemplate') !== false);
+  }
+
+  /**
+   * @test
+   */
+  public function renderErrorPage()
+  {
+    $actual = $this->controller->renderErrorPage('This is an error');
+
+    $this->assertTrue(strpos($actual['content'], '<p class="error">This is an error') !== false);
   }
 }

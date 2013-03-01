@@ -512,6 +512,7 @@ abstract class Controller
    *
    * @param string  $message message to display
    * @param boolean $isError whether this is an error message or not
+   * @return  void
    */
   protected function setSessionMessage($message = '', $isError = false)
   {
