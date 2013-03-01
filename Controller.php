@@ -65,10 +65,18 @@ abstract class Controller
   protected $templatePreferences = [];
 
   /**
-   * Doctrine\ORM\EntityManager
+   * Entity manager to use if a new one isn't requested
+   *
    * @var Doctrine\ORM\EntityManager
    */
-  protected static $em;
+  private static $em;
+
+  /**
+   * If we want a fresh entity manager, it gets stored here in case we need it
+   *
+   * @var Doctrine\ORM\EntityManager
+   */
+  protected static $newEm;
 
   /**
    * Gets the apiKey being used by the application.
@@ -285,17 +293,7 @@ abstract class Controller
   protected function renderPage()
   {
     // look for session messages.
-    if (!isset($_SESSION)) {
-      session_start();
-    }
-    if (isset($_SESSION['concourseMessage'])) {
-      $this->addMessageToTop($_SESSION['concourseMessage']);
-      unset($_SESSION['concourseMessage']);
-    }
-    if (isset($_SESSION['concourseErrorMessage'])) {
-      $this->addErrorToTop($_SESSION['concourseErrorMessage']);
-      unset($_SESSION['concourseErrorMessage']);
-    }
+    $this->addSessionMessages();
 
     $args = [
       'title'           => $this->getTitle(),
@@ -434,15 +432,17 @@ abstract class Controller
    * @param  string $applicationPath full path to the application
    * @param  string $dbName          name of the database in the config file
    * @param  boolean $new            true if we want a new instance.
+   * @param  \PDO    $pdo            Optional pre-existing connection to use
    * @return Doctrine\ORM\EntityManager
    */
-  protected function getEM($applicationPath, $dbName = '', $new = false)
+  protected function getEM($applicationPath, $dbName = '', $new = false, $pdo = null)
   {
     if ($new) {
-      return EntityManager::getEntityManager($applicationPath, null, $dbName);
+      self::$newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+      return self::$newEm;
     }
     if (!isset(self::$em)) {
-      self::$em = EntityManager::getEntityManager($applicationPath, null, $dbName);
+      self::$em = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
     }
     return self::$em;
   }
@@ -478,10 +478,7 @@ abstract class Controller
    */
   protected function redirectWithMessage($path = '/', $message = '')
   {
-    if (!isset($_SESSION)) {
-      session_start();
-    }
-    $_SESSION['concourseMessage'] = $message;
+    $this->setSessionMessage($message, false);
     $this->redirect($path);
   }
 
@@ -494,11 +491,54 @@ abstract class Controller
    */
   protected function redirectWithError($path = '/', $message = '')
   {
-    if (!isset($_SESSION)) {
+    $this->setSessionMessage($message, true);
+    $this->redirect($path);
+  }
+
+  /**
+   * Checks so see if the session is already started, if not, it starts one.
+   *
+   * @return void
+   */
+  private static function startSessionIfNeeded()
+  {
+    if (session_id() === '') {
       session_start();
     }
-    $_SESSION['concourseErrorMessage'] = $message;
-    $this->redirect($path);
+  }
+
+  /**
+   * Sets the message to be displayed on the next time the page is loaded
+   *
+   * @param string  $message message to display
+   * @param boolean $isError whether this is an error message or not
+   */
+  protected function setSessionMessage($message = '', $isError = false)
+  {
+    self::startSessionIfNeeded();
+    if ($isError) {
+      $_SESSION['concourseErrorMessage'] = $message;
+    } else {
+      $_SESSION['concourseMessage'] = $message;
+    }
+  }
+
+  /**
+   * Adds session messages to the page if any are set
+   *
+   * @return void
+   */
+  protected function addSessionMessages()
+  {
+    self::startSessionIfNeeded();
+    if (isset($_SESSION['concourseMessage'])) {
+      $this->addMessageToTop($_SESSION['concourseMessage']);
+      unset($_SESSION['concourseMessage']);
+    }
+    if (isset($_SESSION['concourseErrorMessage'])) {
+      $this->addErrorToTop($_SESSION['concourseErrorMessage']);
+      unset($_SESSION['concourseErrorMessage']);
+    }
   }
 
   /**
