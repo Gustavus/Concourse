@@ -24,7 +24,7 @@ class RouterTest extends Test
   /**
    * @var Array routing configuration
    */
-  private $routingConfig = [
+  private $routingConfigOld = [
     '/' => [
       'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
     ],
@@ -32,6 +32,24 @@ class RouterTest extends Test
       'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
     ],
     '/indexTwo/{id}/{key}' => [
+      'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexThree',
+    ],
+  ];
+
+  /**
+   * @var Array routing configuration
+   */
+  private $routingConfig = [
+    'index' => [
+      'route'   => '/',
+      'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
+    ],
+    'indexTwo' => [
+      'route'   => '/indexTwo/{id}',
+      'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
+    ],
+    'indexTwoKey' => [
+      'route'   => '/indexTwo/{id}/{key}',
       'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexThree',
     ],
   ];
@@ -124,13 +142,13 @@ class RouterTest extends Test
   public function findAdvancedRouteData()
   {
     return array(
-      array(['/', '/indexTwo/id', '/indexTwo/id/{id=\d+}'], '/indexTwo/id/2.5', false),
-      array(['/', '/indexTwo/{id}'], '/', ['/' => []]),
-      array(['/', '/indexTwo/{id}'], '/indexTwo/23', ['/indexTwo/{id}' => ['id' => '23']]),
-      array(['/', '/indexTwo/id'], '/indexTwo/id', ['/indexTwo/id' => []]),
-      array(['/', '/indexTwo/id'], '/indexTwo/id/23', false),
-      array(['/', '/indexTwo/id', '/indexTwo/id/{id}'], '/indexTwo/id/23', ['/indexTwo/id/{id}' => ['id' => '23']]),
-      array(['/', '/indexTwo/id', '/indexTwo/id/id'], '/indexTwo/id/23', false),
+      array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id'], 'indexTwoId' => ['route' => '/indexTwo/id/{id=\d+}']], '/indexTwo/id/2.5', false),
+      array(['index' => ['route' => '/'], 'indexTwo' => ['route' =>  '/indexTwo/{id}']], '/', ['index' => []]),
+      array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/{id}']], '/indexTwo/23', ['indexTwo' => ['id' => '23']]),
+      array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id']], '/indexTwo/id', ['indexTwo' => []]),
+      array(['index' => ['route' => '/'], 'indexTwoId' => ['route' => '/indexTwo/id']], '/indexTwo/id/23', false),
+      array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id'], 'indexTwoId' => ['route' => '/indexTwo/id/{id}']], '/indexTwo/id/23', ['indexTwoId' => ['id' => '23']]),
+      array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id'], 'indexTwoId' => ['route' => '/indexTwo/id/id']], '/indexTwo/id/23', false),
     );
   }
 
@@ -194,7 +212,7 @@ class RouterTest extends Test
    */
   public function findAdvancedRouteCheckingResponseCode()
   {
-    $configRoute = ['/', '/indexTwo/{id=\d+}', '/indexTwo/test/{id}'];
+    $configRoute = ['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/{id=\d+}'], 'indexTwoTest' => ['route' => '/indexTwo/test/{id}']];
     $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
     $this->assertFalse($actual);
     $this->assertSame(400, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
@@ -202,9 +220,9 @@ class RouterTest extends Test
     // reset this
     $this->set('\Gustavus\Concourse\Router', 'routeNotFoundCode', 404);
 
-    $configRoute = ['/', '/indexTwo/{id=\w+}', '/indexTwo/{id=\d+}'];
+    $configRoute = ['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/{id=\w+}'], 'indexTwoId' => ['route' => '/indexTwo/{id=\d+}']];
     $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
-    $this->assertSame(['/indexTwo/{id=\w+}' => ['id' => 'help']], $actual);
+    $this->assertSame(['indexTwo' => ['id' => 'help']], $actual);
     $this->assertSame(404, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
   }
 

@@ -1,9 +1,11 @@
 <?php
 return [
-  '/' => [
+  'index' => [
+      'route' => '/',
       'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
-    ],
-  '/indexTwo/{id}' => [
+  ],
+  'indexTwo' => [
+      'route' => '/indexTwo/{id}',
       'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
-    ],
+  ],
 ];

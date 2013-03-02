@@ -42,21 +42,24 @@ class Router
    * Example routingConfig:
    * <code>
    *   array(
-   *     '/' => array(
+   *     'index' => array(
+   *         'route' => '/',
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
    *     ),
-   *     '/indexTwo/{id}' => array(
+   *     'indexTwo' => array(
+   *         'route' => '/indexTwo/{id}',
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
    *         'visibleTo' => array('template', array('admin'))
    *     ),
-   *     '/indexTwo/item/{id=\d+}' => array(
+   *     'indexTwoItem' => array(
+   *         'route' => '/indexTwo/item/{id=\d+}',
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:showItem',
    *         'visibleTo' => array('template', array('admin'))
    *     ),
    *   );
    * </code>
    *
-   * @param  array|string  $routingConfig Array or path to an array of configurations. Keyed by route values are arrays with options of handler and visibleTo.
+   * @param  array|string  $routingConfig Array or path to an array of configurations. Keyed by alias values are arrays with options of route, handler, and visibleTo.
    * @param  string $route The path from the application's root that the user is requesting
    * @return string
    */
@@ -72,9 +75,9 @@ class Router
     }
 
     if (isset($routingConfig[$route])) {
-      // basic route
+      // alias found
       return Router::runHandler($routingConfig[$route]);
-    } else if (($advancedRoute = Router::findAdvancedRoute(array_keys($routingConfig), $route)) !== false) {
+    } else if (($advancedRoute = Router::findAdvancedRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
       return Router::runHandler($routingConfig[key($advancedRoute)], $advancedRoute);
     } else {
@@ -118,6 +121,8 @@ class Router
    * @param  array $routeConfig
    * @param  array $args  arguments to pass onto the controller
    * @return string false if user can't access page. String otherwise
+   *
+   * new
    */
   private static function runHandler(array $routeConfig, array $args = array())
   {
@@ -149,14 +154,17 @@ class Router
    * @param  array $routes
    * @param  string $route
    * @return array|boolean Array keyed by route value of analyzed result if a route was found, false otherwise
+   *
+   * new
    */
   private static function findAdvancedRoute(array $routes, $route)
   {
     // first lets split the route up
     $splitRoute = explode('/', trim($route, '/'));
 
-    foreach ($routes as $key) {
-      $splitKey = explode('/', trim($key, '/'));
+    foreach ($routes as $key => $value) {
+      $splitKey = explode('/', trim($value['route'], '/'));
+      //$splitKey = explode('/', trim($key, '/'));
       if (count($splitKey) === count($splitRoute)) {
         // we might have a match. Let's look to see how close they match
         $analyzeResult = Router::analyzeSplitRoutes($splitKey, $splitRoute);
