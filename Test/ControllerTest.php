@@ -355,4 +355,67 @@ class ControllerTest extends Test
 
     $this->assertTrue(strpos($actual['content'], '<p class="error">This is an error') !== false);
   }
+
+  /**
+   * @test
+   */
+  public function buildUrl()
+  {
+    $expected = '/';
+    $this->assertSame($expected, $this->controller->buildUrl('index'));
+  }
+
+  /**
+   * @test
+   */
+  public function buildUrlParam()
+  {
+    $expected = '/indexTwo/2';
+    $this->assertSame($expected, $this->controller->buildUrl('indexTwo', ['id' => 2]));
+  }
+
+  /**
+   * @test
+   */
+  public function buildUrlParams()
+  {
+    $expected = '/indexTwo/2/hello';
+    $this->assertSame($expected, $this->controller->buildUrl('indexTwoKey', ['id' => 2, 'key' => 'hello']));
+  }
+
+  /**
+   * @test
+   * @expectedException OutOfBoundsException
+   */
+  public function buildUrlParamNotFound()
+  {
+    $this->assertNull($this->controller->buildUrl('indexT', ['id' => 2]));
+  }
+
+  /**
+   * @test
+   */
+  public function forward()
+  {
+    $actual = $this->controller->forward('index');
+    $this->assertSame('RouterTestController index()', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function forwardAdvanced()
+  {
+    $actual = $this->controller->forward('indexTwo', ['id' => 23]);
+    $this->assertSame('RouterTestController indexTwo(23)', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function forwardAdvancedTwoParams()
+  {
+    $actual = $this->controller->forward('indexTwoKey', ['id' => 23, 'key' => 'arst']);
+    $this->assertSame('RouterTestController indexThree(23, arst)', $actual);
+  }
 }

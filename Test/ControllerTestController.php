@@ -13,6 +13,12 @@ class ControllerTestController extends Controller
   protected $apiKey = '5399382D942ED2F4138663E18FD6D558';
 
   /**
+   * RoutingConfig array or location
+   * @var array|string
+   */
+  protected static $routeConfig = '/cis/lib/Gustavus/Concourse/Test/routing.php';
+
+  /**
    * {@inheritdoc}
    */
   public function getLocalNavigation()

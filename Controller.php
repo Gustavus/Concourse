@@ -12,7 +12,8 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Gatekeeper\Gatekeeper,
   Gustavus\Doctrine\EntityManager,
   Gustavus\TwigFactory\TwigFactory,
-  Campus\Pull\People;
+  Campus\Pull\People,
+  Gustavus\Concourse\RoutingUtil;
 
 /**
  * Shared controller for all Concourse applications
@@ -63,6 +64,12 @@ abstract class Controller
    * @var array
    */
   protected $templatePreferences = [];
+
+  /**
+   * Full routing configuration or location of configuration file
+   * @var array|string
+   */
+  protected static $routeConfig;
 
   /**
    * Entity manager to use if a new one isn't requested
@@ -561,5 +568,29 @@ abstract class Controller
       $permissions = [$permissions];
     }
     return Gatekeeper::checkPermissions($applicationName, $logInLevel, $permissions);
+  }
+
+  /**
+   * Alias to RoutingUtil::buildUrl
+   *
+   * @param  string $alias       Alias to build url for
+   * @param  array  $parameters  Params to put into url
+   * @return string
+   */
+  protected function buildUrl($alias, array $parameters = array())
+  {
+    return RoutingUtil::buildUrl(static::$routeConfig, $alias, $parameters);
+  }
+
+  /**
+   * Alias to RoutingUtil::forward
+   *
+   * @param  string $alias       Alias to forward to
+   * @param  array  $parameters  Parameters to send to the handler
+   * @return mixed
+   */
+  protected function forward($alias, array $parameters = array())
+  {
+    return RoutingUtil::forward(static::$routeConfig, $alias, $parameters);
   }
 }

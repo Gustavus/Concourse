@@ -24,21 +24,6 @@ class RouterTest extends Test
   /**
    * @var Array routing configuration
    */
-  private $routingConfigOld = [
-    '/' => [
-      'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
-    ],
-    '/indexTwo/{id}' => [
-      'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
-    ],
-    '/indexTwo/{id}/{key}' => [
-      'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexThree',
-    ],
-  ];
-
-  /**
-   * @var Array routing configuration
-   */
   private $routingConfig = [
     'index' => [
       'route'   => '/',

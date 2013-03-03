@@ -79,10 +79,12 @@ class RoutingUtilTest extends Test
 
   /**
    * @test
+   * @expectedException OutOfBoundsException
    */
   public function buildUrlParamNotFound()
   {
-    $this->assertSame('/', RoutingUtil::buildUrl($this->routingConfig, 'indexT', ['id' => 2]));
+    $actual = RoutingUtil::buildUrl($this->routingConfig, 'indexT', ['id' => 2]);
+    $this->assertNull($actual);
   }
 
   /**
@@ -92,6 +94,16 @@ class RoutingUtilTest extends Test
   {
     $actual = RoutingUtil::forward($this->routingConfig, 'index');
     $this->assertSame('RouterTestController index()', $actual);
+  }
+
+  /**
+   * @test
+   * @expectedException OutOfBoundsException
+   */
+  public function forwardNotFound()
+  {
+    $actual = RoutingUtil::forward($this->routingConfig, 'indexa');
+    $this->assertNull($actual);
   }
 
   /**
@@ -111,5 +123,4 @@ class RoutingUtilTest extends Test
     $actual = RoutingUtil::forward($this->routingConfig, 'indexTwoKey', ['id' => 23, 'key' => 'arst']);
     $this->assertSame('RouterTestController indexThree(23, arst)', $actual);
   }
-
 }

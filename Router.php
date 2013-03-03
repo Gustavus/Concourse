@@ -79,7 +79,7 @@ class Router
       return Router::runHandler($routingConfig[$route]);
     } else if (($advancedRoute = Router::findAdvancedRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
-      return Router::runHandler($routingConfig[key($advancedRoute)], $advancedRoute);
+      return Router::runHandler($routingConfig[key($advancedRoute)], current($advancedRoute));
     } else {
       // route not found
       return Router::handleRouteNotFound();
@@ -121,10 +121,8 @@ class Router
    * @param  array $routeConfig
    * @param  array $args  arguments to pass onto the controller
    * @return string false if user can't access page. String otherwise
-   *
-   * new
    */
-  private static function runHandler(array $routeConfig, array $args = array())
+  protected static function runHandler(array $routeConfig, array $args = array())
   {
     if (!Router::userCanAccessPage($routeConfig)) {
       header('HTTP/1.0 403 Forbidden');
@@ -144,7 +142,7 @@ class Router
     }
     // pass the associative array created by analyzeSplitRoutes.
     // This requires the handlers to take in one argument
-    return call_user_func(array(new $handler[0], $handler[1]), current($args));
+    return call_user_func(array(new $handler[0], $handler[1]), $args);
 
   }
 
@@ -154,8 +152,6 @@ class Router
    * @param  array $routes
    * @param  string $route
    * @return array|boolean Array keyed by route value of analyzed result if a route was found, false otherwise
-   *
-   * new
    */
   private static function findAdvancedRoute(array $routes, $route)
   {

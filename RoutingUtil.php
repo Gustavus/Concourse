@@ -6,10 +6,7 @@
 
 namespace Gustavus\Concourse;
 
-require_once 'gatekeeper/gatekeeper.class.php';
-
-use Gustavus\Gatekeeper\Gatekeeper,
-  TemplatePageRequest;
+use OutOfBoundsException;
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -22,13 +19,16 @@ class RoutingUtil extends Router
   /**
    * Builds a url based on the alias and the route in $routeConfig
    *
-   * @param  array  $routeConfig Full routing array
+   * @param  array|string  $routeConfig Full routing array or path to the full array
    * @param  string $alias       alias to build url for
    * @param  array  $parameters  parameters to build url with. keyed by route param name
    * @return string built url
    */
-  public static function buildUrl(array $routeConfig, $alias = '/', array $parameters = array())
+  public static function buildUrl($routeConfig, $alias = '/', array $parameters = array())
   {
+    if (!is_array($routeConfig)) {
+      $routeConfig = include($routeConfig);
+    }
     if (isset($routeConfig[$alias])) {
       $route = $routeConfig[$alias]['route'];
       if (strpos($route, '{') !== false) {
@@ -40,22 +40,28 @@ class RoutingUtil extends Router
         }
       }
       return $route;
+    } else {
+      throw new OutOfBoundsException("Alias: {$alias} not found in routing configuration");
     }
-    return '/';
   }
 
   /**
    * Forwards a request onto a different handler
    *
-   * @param  array  $routeConfig Full routing array
+   * @param  array|string  $routeConfig Full routing array or path to the full array
    * @param  string $alias       alias to forward to
    * @param  array  $parameters  parameters to send to the handler
    * @return mixed
    */
-  public static function forward(array $routeConfig, $alias = '/', array $parameters = array())
+  public static function forward($routeConfig, $alias = '/', array $parameters = array())
   {
+    if (!is_array($routeConfig)) {
+      $routeConfig = include($routeConfig);
+    }
     if (isset($routeConfig[$alias])) {
       return Router::runHandler($routeConfig[$alias], $parameters);
+    } else {
+      throw new OutOfBoundsException("Alias: {$alias} not found in routing configuration");
     }
   }
 }
