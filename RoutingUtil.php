@@ -36,9 +36,7 @@ class RoutingUtil extends Router
       if (strpos($route, '{') !== false) {
         // we need to fill the url with parameters
         foreach ($parameters as $key => $param) {
-          if (strpos($route, "{{$key}}") !== false) {
-            $route = str_replace("{{$key}}", $param, $route);
-          }
+          $route = preg_replace("`{{$key}.*?}`", $param, $route);
         }
       }
       return $route;
