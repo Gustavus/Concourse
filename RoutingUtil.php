@@ -22,6 +22,8 @@ class RoutingUtil extends Router
    * @param  array|string  $routeConfig Full routing array or path to the full array
    * @param  string $alias       alias to build url for
    * @param  array  $parameters  parameters to build url with. keyed by route param name
+   *
+   * @throws  OutOfBoundsException If the alias cannot be found in the routing configuration
    * @return string built url
    */
   public static function buildUrl($routeConfig, $alias = '/', array $parameters = array())
@@ -51,6 +53,8 @@ class RoutingUtil extends Router
    * @param  array|string  $routeConfig Full routing array or path to the full array
    * @param  string $alias       alias to forward to
    * @param  array  $parameters  parameters to send to the handler
+   *
+   * @throws  OutOfBoundsException If the alias cannot be found in the routing configuration
    * @return mixed
    */
   public static function forward($routeConfig, $alias = '/', array $parameters = array())
