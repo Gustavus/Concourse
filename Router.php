@@ -77,9 +77,9 @@ class Router
     if (isset($routingConfig[$route])) {
       // alias found
       return Router::runHandler($routingConfig[$route]);
-    } else if (($advancedRoute = Router::findAdvancedRoute($routingConfig, $route)) !== false) {
+    } else if (($foundRoute = Router::findRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
-      return Router::runHandler($routingConfig[key($advancedRoute)], current($advancedRoute));
+      return Router::runHandler($routingConfig[key($foundRoute)], current($foundRoute));
     } else {
       // route not found
       return Router::handleRouteNotFound();
@@ -153,7 +153,7 @@ class Router
    * @param  string $route
    * @return array|boolean Array keyed by route value of analyzed result if a route was found, false otherwise
    */
-  private static function findAdvancedRoute(array $routes, $route)
+  private static function findRoute(array $routes, $route)
   {
     // first lets split the route up
     $splitRoute = explode('/', trim($route, '/'));
@@ -260,6 +260,4 @@ class Router
     }
     return true;
   }
-
-
 }
