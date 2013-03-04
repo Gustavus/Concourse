@@ -66,12 +66,6 @@ abstract class Controller
   protected $templatePreferences = [];
 
   /**
-   * Full routing configuration or location of configuration file
-   * @var array|string
-   */
-  protected static $routeConfig;
-
-  /**
    * Entity manager to use if a new one isn't requested
    *
    * @var Doctrine\ORM\EntityManager
@@ -575,7 +569,14 @@ abstract class Controller
   }
 
   /**
-   * Alias to RoutingUtil::buildUrl
+   * Returns the routing configuration
+   *
+   * @return array|string Either the full routing array or the path to the routing configuration file
+   */
+  abstract protected function getRoutingConfiguration();
+
+  /**
+   * Calls RoutingUtil::buildUrl with the routeConfig from getRoutingConfiguration
    *
    * @param  string $alias       Alias to build url for
    * @param  array  $parameters  Params to put into url
@@ -583,11 +584,11 @@ abstract class Controller
    */
   protected function buildUrl($alias, array $parameters = array())
   {
-    return RoutingUtil::buildUrl(static::$routeConfig, $alias, $parameters);
+    return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters);
   }
 
   /**
-   * Alias to RoutingUtil::forward
+   * Calls RoutingUtil::forward with the routeConfig from getRoutingConfiguration
    *
    * @param  string $alias       Alias to forward to
    * @param  array  $parameters  Parameters to send to the handler
@@ -595,6 +596,6 @@ abstract class Controller
    */
   protected function forward($alias, array $parameters = array())
   {
-    return RoutingUtil::forward(static::$routeConfig, $alias, $parameters);
+    return RoutingUtil::forward($this->getRoutingConfiguration(), $alias, $parameters);
   }
 }

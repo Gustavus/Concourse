@@ -27,6 +27,14 @@ class ControllerTestController extends Controller
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getRoutingConfiguration()
+  {
+    return self::$routeConfig;
+  }
+
+  /**
    * overloads renderPage for testing so we don't try to render the page
    *
    * @return array
