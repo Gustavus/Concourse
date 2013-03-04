@@ -320,7 +320,7 @@ abstract class Controller
   {
     $twig = TwigFactory::getTwigFilesystem(dirname($view));
 
-    $twig->addExtension(new ConcourseTwigExtension(static::$routeConfig));
+    $twig->addExtension(new ConcourseTwigExtension($this->getRoutingConfiguration()));
 
     $this->addContent($twig->render(basename($view), $parameters));
     return $this->renderPage();
