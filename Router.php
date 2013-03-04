@@ -74,10 +74,7 @@ class Router
       $route = '/' . $route;
     }
 
-    if (isset($routingConfig[$route])) {
-      // alias found
-      return Router::runHandler($routingConfig[$route]);
-    } else if (($foundRoute = Router::findRoute($routingConfig, $route)) !== false) {
+    if (($foundRoute = Router::findRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
       return Router::runHandler($routingConfig[key($foundRoute)], current($foundRoute));
     } else {
