@@ -324,7 +324,11 @@ abstract class Controller
    */
   protected function renderTemplate($view, array $parameters = array())
   {
-    $this->addContent(TwigFactory::renderTwigFilesystemTemplate($view, $parameters));
+    $twig = TwigFactory::getTwigFilesystem(dirname($view));
+
+    $twig->addExtension(new ConcourseTwigExtension(static::$routeConfig));
+
+    $this->addContent($twig->render(basename($view), $parameters));
     return $this->renderPage();
   }
 

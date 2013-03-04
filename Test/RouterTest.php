@@ -112,19 +112,19 @@ class RouterTest extends Test
 
   /**
    * @test
-   * @dataProvider findAdvancedRouteData
+   * @dataProvider findRouteData
    */
-  public function findAdvancedRoute($routes, $route, $expected)
+  public function findRoute($routes, $route, $expected)
   {
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($routes, $route));
+    $actual = $this->call('\Gustavus\Concourse\Router', 'findRoute', array($routes, $route));
     $this->assertSame($expected, $actual);
   }
 
   /**
-   * FindAdvancedRoute data
+   * FindRoute data
    * @return array
    */
-  public function findAdvancedRouteData()
+  public function findRouteData()
   {
     return array(
       array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id'], 'indexTwoId' => ['route' => '/indexTwo/id/{id=\d+}']], '/indexTwo/id/2.5', false),
@@ -195,10 +195,10 @@ class RouterTest extends Test
   /**
    * @test
    */
-  public function findAdvancedRouteCheckingResponseCode()
+  public function findRouteCheckingResponseCode()
   {
     $configRoute = ['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/{id=\d+}'], 'indexTwoTest' => ['route' => '/indexTwo/test/{id}']];
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
+    $actual = $this->call('\Gustavus\Concourse\Router', 'findRoute', array($configRoute, '/indexTwo/help'));
     $this->assertFalse($actual);
     $this->assertSame(400, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
 
@@ -206,7 +206,7 @@ class RouterTest extends Test
     $this->set('\Gustavus\Concourse\Router', 'routeNotFoundCode', 404);
 
     $configRoute = ['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/{id=\w+}'], 'indexTwoId' => ['route' => '/indexTwo/{id=\d+}']];
-    $actual = $this->call('\Gustavus\Concourse\Router', 'findAdvancedRoute', array($configRoute, '/indexTwo/help'));
+    $actual = $this->call('\Gustavus\Concourse\Router', 'findRoute', array($configRoute, '/indexTwo/help'));
     $this->assertSame(['indexTwo' => ['id' => 'help']], $actual);
     $this->assertSame(404, $this->get('\Gustavus\Concourse\Router', 'routeNotFoundCode'));
   }

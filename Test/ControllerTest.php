@@ -395,6 +395,17 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function buildUrlParamsTwig()
+  {
+    $expected = '/indexTwo/2/hello';
+
+    $actual = $this->controller->renderTemplate('/cis/lib/Gustavus/Concourse/Test/twigExtension.html.twig');
+    $this->assertTrue(strpos($actual['content'], $expected) !== false);
+  }
+
+  /**
+   * @test
+   */
   public function forward()
   {
     $actual = $this->controller->forward('index');
