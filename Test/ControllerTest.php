@@ -384,8 +384,8 @@ class ControllerTest extends Test
    */
   public function buildUrlParam()
   {
-    $expected = '/indexTwo/2';
-    $this->assertSame($expected, $this->controller->buildUrl('indexTwo', ['id' => 2]));
+    $expected = '/arst/indexTwo/2';
+    $this->assertSame($expected, $this->controller->buildUrl('indexTwo', ['id' => 2], '/arst'));
   }
 
   /**
@@ -393,8 +393,8 @@ class ControllerTest extends Test
    */
   public function buildUrlParams()
   {
-    $expected = '/indexTwo/2/hello';
-    $this->assertSame($expected, $this->controller->buildUrl('indexTwoKey', ['id' => 2, 'key' => 'hello']));
+    $expected = '/arst/indexTwo/2/hello';
+    $this->assertSame($expected, $this->controller->buildUrl('indexTwoKey', ['id' => 2, 'key' => 'hello'], '/arst/'));
   }
 
   /**

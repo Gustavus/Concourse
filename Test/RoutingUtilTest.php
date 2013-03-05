@@ -64,8 +64,8 @@ class RoutingUtilTest extends Test
    */
   public function buildUrlParam()
   {
-    $expected = '/indexTwo/2';
-    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'indexTwo', ['id' => 2]));
+    $expected = '/arst/indexTwo/2';
+    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'indexTwo', ['id' => 2], '/arst'));
   }
 
   /**
@@ -73,8 +73,8 @@ class RoutingUtilTest extends Test
    */
   public function buildUrlParams()
   {
-    $expected = '/indexTwo/2/hello';
-    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'indexTwoKey', ['id' => 2, 'key' => 'hello']));
+    $expected = '/arst/indexTwo/2/hello';
+    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'indexTwoKey', ['id' => 2, 'key' => 'hello'], '/arst/'));
   }
 
   /**

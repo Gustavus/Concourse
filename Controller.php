@@ -596,11 +596,12 @@ abstract class Controller
    *
    * @param  string $alias       Alias to build url for
    * @param  array  $parameters  Params to put into url
+   * @param  string $baseDir     Applications web root
    * @return string
    */
-  protected function buildUrl($alias, array $parameters = array())
+  protected function buildUrl($alias, array $parameters = array(), $baseDir = '')
   {
-    return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters);
+    return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters, $baseDir);
   }
 
   /**
