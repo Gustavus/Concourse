@@ -18,19 +18,20 @@ use Twig_Extension,
 class ConcourseTwigExtension extends Twig_Extension
 {
   /**
-   * Full routing configuration or location of configuration file
-   * @var array|string
+   * The controller we are currently working with
+   *
+   * @var Controller
    */
-  private static $routeConfig;
+  private $controller;
 
   /**
-   * Sets routeConfig
+   * Sets the controller
    *
-   * @param array|string $routeConfig Full routing configuration or path to configuration file
+   * @param Controller $controller Concourse Controller
    */
-  public function __construct($routeConfig)
+  public function __construct($controller)
   {
-    self::$routeConfig = $routeConfig;
+    $this->controller = $controller;
   }
 
   /**
@@ -42,7 +43,7 @@ class ConcourseTwigExtension extends Twig_Extension
    */
   public function buildUrl($alias, array $parameters = array())
   {
-    return RoutingUtil::buildUrl(self::$routeConfig, $alias, $parameters);
+    return $this->controller->buildUrl($alias, $parameters);
   }
 
   /**
