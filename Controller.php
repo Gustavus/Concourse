@@ -453,6 +453,22 @@ abstract class Controller
   }
 
   /**
+   * Gets the new entity manager generated in getEm with $new = true. Or generates a new one itself if a new one hasn't been set yet.
+   *
+   * @param  string $applicationPath full path to the application
+   * @param  string $dbName          name of the database in the config file
+   * @param  \PDO    $pdo            Optional pre-existing connection to use
+   * @return Doctrine\ORM\EntityManager
+   */
+  protected function getNewEM($applicationPath = '', $dbName = '', $pdo = null)
+  {
+    if (!isset(self::$newEm)) {
+      self::$newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+    }
+    return self::$newEm;
+  }
+
+  /**
    * Gets the current request method of the server
    *
    * @return string

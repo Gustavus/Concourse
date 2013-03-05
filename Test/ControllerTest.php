@@ -224,6 +224,20 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function getNewEM()
+  {
+    $em = $this->controller->getEM('/cis/lib/Gustavus/Menu', 'menu');
+    $newEm = $this->controller->getNewEM('/cis/lib/Gustavus/Menu', 'menu');
+    $this->assertNotSame($em, $newEm);
+
+    $newNewEm = $this->controller->getEM('/cis/lib/Gustavus/Menu', 'menu', true);
+    $newestEm = $this->controller->getNewEM();
+    $this->assertSame($newNewEm, $newestEm);
+  }
+
+  /**
+   * @test
+   */
   public function getMethod()
   {
     // will never be set from cli
