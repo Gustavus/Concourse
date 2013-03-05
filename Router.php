@@ -188,7 +188,7 @@ class Router
         continue;
       } else if (strpos($configRoute[$i], '{') !== false) {
         // routing has a parameter in the url
-        if (empty($route[$i])) {
+        if (empty($route[$i]) && !is_numeric($route[$i])) {
           // we don't want to keep going
           return false;
         } else {
