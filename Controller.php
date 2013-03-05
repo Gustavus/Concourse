@@ -320,7 +320,7 @@ abstract class Controller
   {
     $twig = TwigFactory::getTwigFilesystem(dirname($view));
 
-    $twig->addExtension(new ConcourseTwigExtension($this->getRoutingConfiguration()));
+    $twig->addExtension(new ConcourseTwigExtension($this));
 
     $this->addContent($twig->render(basename($view), $parameters));
     return $this->renderPage();
@@ -599,8 +599,11 @@ abstract class Controller
    * @param  string $baseDir     Applications web root
    * @return string
    */
-  protected function buildUrl($alias, array $parameters = array(), $baseDir = '')
+  public function buildUrl($alias, array $parameters = array(), $baseDir = '')
   {
+    if (empty($baseDir)) {
+      $baseDir = dirname($_SERVER['SCRIPT_NAME']);
+    }
     return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters, $baseDir);
   }
 

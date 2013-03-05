@@ -23,6 +23,11 @@ use Gustavus\Test\Test,
 class ControllerTest extends Test
 {
   /**
+   * Base Directory for urls
+   */
+  const BASE_DIR = '/Gustavus/Concourse/ControllerTest/';
+
+  /**
    * Controller test object
    * @var Controller
    */
@@ -56,6 +61,7 @@ class ControllerTest extends Test
         $this->controller->$function($value);
       }
     }
+    $_SERVER['SCRIPT_NAME'] = self::BASE_DIR . 'index.php';
   }
 
   /**
@@ -375,7 +381,7 @@ class ControllerTest extends Test
    */
   public function buildUrl()
   {
-    $expected = '/';
+    $expected = self::BASE_DIR;
     $this->assertSame($expected, $this->controller->buildUrl('index'));
   }
 
