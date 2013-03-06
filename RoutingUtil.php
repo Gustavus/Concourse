@@ -61,6 +61,10 @@ class RoutingUtil extends Router
     if (!is_array($routeConfig)) {
       $routeConfig = include($routeConfig);
     }
+    if (strpos($alias, ':') !== false) {
+      // the alias is actually the handler that we want to forward onto.
+      $routeConfig[$alias] = ['handler' => $alias];
+    }
     if (isset($routeConfig[$alias])) {
       return Router::runHandler($routeConfig[$alias], $parameters);
     } else {

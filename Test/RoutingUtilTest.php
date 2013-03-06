@@ -118,6 +118,15 @@ class RoutingUtilTest extends Test
   /**
    * @test
    */
+  public function forwardWithHandler()
+  {
+    $actual = RoutingUtil::forward($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwo', ['id' => 23]);
+    $this->assertSame('RouterTestController indexTwo(23)', $actual);
+  }
+
+  /**
+   * @test
+   */
   public function forwardAdvancedTwoParams()
   {
     $actual = RoutingUtil::forward($this->routingConfig, 'indexTwoKey', ['id' => 23, 'key' => 'arst']);
