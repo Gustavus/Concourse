@@ -601,9 +601,6 @@ abstract class Controller
    */
   public function buildUrl($alias, array $parameters = array(), $baseDir = '')
   {
-    if (empty($baseDir)) {
-      $baseDir = dirname($_SERVER['SCRIPT_NAME']);
-    }
     return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters, $baseDir);
   }
 

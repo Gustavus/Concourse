@@ -32,6 +32,9 @@ class RoutingUtil extends Router
     if (!is_array($routeConfig)) {
       $routeConfig = include($routeConfig);
     }
+    if (empty($baseDir)) {
+      $baseDir = dirname($_SERVER['SCRIPT_NAME']);
+    }
     if (isset($routeConfig[$alias])) {
       $route = $routeConfig[$alias]['route'];
       if (strpos($route, '{') !== false) {

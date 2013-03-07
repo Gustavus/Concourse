@@ -19,6 +19,11 @@ use Gustavus\Test\Test,
 class RoutingUtilTest extends Test
 {
   /**
+   * Base Directory for urls
+   */
+  const BASE_DIR = '/Gustavus/Concourse/ControllerTest/';
+
+  /**
    * @var Array routing configuration
    */
   private $routingConfig = [
@@ -41,6 +46,7 @@ class RoutingUtilTest extends Test
    */
   public function setUp()
   {
+    $_SERVER['SCRIPT_NAME'] = self::BASE_DIR . 'index.php';
   }
 
   /**
@@ -56,6 +62,15 @@ class RoutingUtilTest extends Test
   public function buildUrl()
   {
     $expected = '/';
+    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'index', array(), '/'));
+  }
+
+  /**
+   * @test
+   */
+  public function buildUrlEmptyBaseDir()
+  {
+    $expected = self::BASE_DIR;
     $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'index'));
   }
 
