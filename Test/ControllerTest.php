@@ -62,6 +62,7 @@ class ControllerTest extends Test
       }
     }
     $_SERVER['SCRIPT_NAME'] = self::BASE_DIR . 'index.php';
+    $this->unAuthenticate();
   }
 
   /**
