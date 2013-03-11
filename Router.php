@@ -6,10 +6,16 @@
 
 namespace Gustavus\Concourse;
 
+// we want the template to start when we require it.
+// This will set up debugging and extreme maintenance.
+if (!defined('GUSTAVUS_START_TEMPLATE')) {
+  define('GUSTAVUS_START_TEMPLATE', true);
+}
+
+require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
-use Gustavus\Gatekeeper\Gatekeeper,
-  TemplatePageRequest;
+use Gustavus\Gatekeeper\Gatekeeper;
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -65,7 +71,6 @@ class Router
    */
   public static function handleRequest($routingConfig, $route)
   {
-    TemplatePageRequest::initExtremeMaintenance();
     if (!is_array($routingConfig)) {
       $routingConfig = include($routingConfig);
     }
