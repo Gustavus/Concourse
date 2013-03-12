@@ -370,6 +370,15 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function renderView()
+  {
+    $actual = $this->controller->renderView('/cis/lib/Gustavus/Concourse/Test/testView.html.twig', ['testParam' => 'TestingTemplate']);
+    $this->assertTrue(strpos($actual, 'TestingTemplate') !== false);
+  }
+
+  /**
+   * @test
+   */
   public function renderErrorPage()
   {
     $actual = $this->controller->renderErrorPage('This is an error');

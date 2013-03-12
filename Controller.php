@@ -318,12 +318,24 @@ abstract class Controller
    */
   protected function renderTemplate($view, array $parameters = array())
   {
-    $twig = TwigFactory::getTwigFilesystem(dirname($view));
+    $this->addContent($this->renderView($view, $parameters));
+    return $this->renderPage();
+  }
 
+  /**
+   * Renders a twig template specified in $view
+   *
+   * @param  string $view       path to the template view
+   * @param  array  $parameters parameters to pass to the view
+   * @return string
+   */
+  protected function renderView($view, array $parameters = array())
+  {
+    $twig = TwigFactory::getTwigFilesystem(dirname($view));
+    // add concourse extension
     $twig->addExtension(new ConcourseTwigExtension($this));
 
-    $this->addContent($twig->render(basename($view), $parameters));
-    return $this->renderPage();
+    return $twig->render(basename($view), $parameters);
   }
 
   /**
