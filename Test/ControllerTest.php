@@ -53,6 +53,7 @@ class ControllerTest extends Test
    */
   public function setUp()
   {
+    $this->set('\Gustavus\Concourse\Router', 'routeAlias', 'indexTwo');
     $this->controller = new TestObject(new ControllerTestController);
 
     foreach ($this->controllerProperties as $key => $value) {
@@ -458,5 +459,39 @@ class ControllerTest extends Test
   {
     $actual = $this->controller->forward('indexTwoKey', ['id' => 23, 'key' => 'arst']);
     $this->assertSame('RouterTestController indexThree(23, arst)', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function setAndGetBreadCrumbs()
+  {
+    $crumbs = [['url' => 'Some Url', 'text' => 'text'], ['url' => 'NExt url', 'text' => 'more text']];
+    $this->controller->setBreadCrumbs($crumbs);
+
+    $actual = $this->controller->renderPage();
+    $this->assertSame($crumbs, $actual['breadCrumbAdditions']);
+  }
+
+  /**
+   * @test
+   */
+  public function getBreadCrumbsFromRouting()
+  {
+    $expected = [['url' => 'Some Url', 'text' => 'text']];
+
+    $actual = $this->controller->findBreadCrumbsFromRoute();
+    $this->assertSame($expected, $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function getBreadCrumbsFromRoutingRender()
+  {
+    $expected = [['url' => 'Some Url', 'text' => 'text']];
+
+    $actual = $this->controller->renderPage();
+    $this->assertSame($expected, $actual['breadCrumbAdditions']);
   }
 }

@@ -37,13 +37,14 @@ class ControllerTestController extends Controller
   {
     $this->addSessionMessages();
     return [
-      'title'           => $this->getTitle(),
-      'subtitle'        => $this->getSubtitle(),
-      'content'         => $this->getContent(),
-      'localNavigation' => $this->getLocalNavigation(),
-      'focusBox'        => $this->getFocusBox(),
-      'stylesheets'     => $this->getStylesheets(),
-      'javascripts'     => $this->getJavascripts(),
+      'title'               => $this->getTitle(),
+      'subtitle'            => $this->getSubtitle(),
+      'content'             => $this->getContent(),
+      'localNavigation'     => $this->getLocalNavigation(),
+      'focusBox'            => $this->getFocusBox(),
+      'stylesheets'         => $this->getStylesheets(),
+      'javascripts'         => $this->getJavascripts(),
+      'breadCrumbAdditions' => $this->getBreadCrumbs(),
     ];
   }
 

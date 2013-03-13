@@ -63,6 +63,11 @@ abstract class Controller
   /**
    * @var array
    */
+  protected $breadCrumbs = [];
+
+  /**
+   * @var array
+   */
   protected $templatePreferences = [];
 
   /**
@@ -234,6 +239,41 @@ abstract class Controller
   }
 
   /**
+   * Gets breadcrumbs. If empty, it will look in the router for bread crumbs
+   *
+   * @return array
+   */
+  protected function getBreadCrumbs()
+  {
+    if (empty($this->breadCrumbs)) {
+      return $this->findBreadCrumbsFromRoute();
+    }
+    return $this->breadCrumbs;
+  }
+
+  /**
+   * Gets the bread crumbs from the routing configuration for the current alias
+   *
+   * @return array
+   */
+  private function findBreadCrumbsFromRoute()
+  {
+    return RoutingUtil::getBreadCrumbs($this->getRoutingConfiguration(), Router::$routeAlias);
+  }
+
+  /**
+   * Sets bread crumbs
+   *
+   * @param array $breadCrumbs Array of arrays with url and text keys
+   * @return $this
+   */
+  protected function setBreadCrumbs(array $breadCrumbs)
+  {
+    $this->breadCrumbs = $breadCrumbs;
+    return $this;
+  }
+
+  /**
    * Returns the local navigation parameters
    *
    * @return array|string Either an array for \Gustavus\LocalNavigation\ItemFactory, or string of html
@@ -297,13 +337,14 @@ abstract class Controller
     $this->addSessionMessages();
 
     $args = [
-      'title'           => $this->getTitle(),
-      'subtitle'        => $this->getSubtitle(),
-      'content'         => $this->getContent(),
-      'localNavigation' => $this->getLocalNavigation(),
-      'focusBox'        => $this->getFocusBox(),
-      'stylesheets'     => $this->getStylesheets(),
-      'javascripts'     => $this->getJavascripts(),
+      'title'               => $this->getTitle(),
+      'subtitle'            => $this->getSubtitle(),
+      'content'             => $this->getContent(),
+      'localNavigation'     => $this->getLocalNavigation(),
+      'focusBox'            => $this->getFocusBox(),
+      'stylesheets'         => $this->getStylesheets(),
+      'javascripts'         => $this->getJavascripts(),
+      'breadCrumbAdditions' => $this->getBreadCrumbs(),
     ];
 
     return (new TemplateBuilder($args, $this->getTemplatePreferences()))->render();
