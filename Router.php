@@ -62,12 +62,14 @@ class Router
    *     'indexTwo' => array(
    *         'route' => '/indexTwo/{id}',
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
-   *         'visibleTo' => array('template', array('admin'))
+   *         'visibleTo' => array('template', array('admin')),
+   *         'breadCrumbs' => [['url' => 'Some Url', 'text' => 'text']],
    *     ),
    *     'indexTwoItem' => array(
    *         'route' => '/indexTwo/item/{id=\d+}',
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:showItem',
    *         'visibleTo' => array('template', array('admin'))
+   *         'breadCrumbs' => [['alias' => 'index', 'text' => 'text']],
    *     ),
    *   );
    * </code>
