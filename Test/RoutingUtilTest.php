@@ -32,8 +32,9 @@ class RoutingUtilTest extends Test
       'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
     ],
     'indexTwo' => [
-      'route'   => '/indexTwo/{id}',
-      'handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
+      'route'       => '/indexTwo/{id}',
+      'handler'     => '\Gustavus\Concourse\Test\RouterTestController:indexTwo',
+      'breadCrumbs' => [['url' => 'some url', 'text' => 'some text']],
     ],
     'indexTwoKey' => [
       'route'   => '/indexTwo/{id}/{key}',
@@ -146,5 +147,33 @@ class RoutingUtilTest extends Test
   {
     $actual = RoutingUtil::forward($this->routingConfig, 'indexTwoKey', ['id' => 23, 'key' => 'arst']);
     $this->assertSame('RouterTestController indexThree(23, arst)', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function getBreadCrumbs()
+  {
+    $actual = RoutingUtil::getBreadCrumbs($this->routingConfig, 'indexTwo');
+    $this->assertSame($this->routingConfig['indexTwo']['breadCrumbs'], $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function getBreadCrumbsNoneDefined()
+  {
+    $actual = RoutingUtil::getBreadCrumbs($this->routingConfig, 'indexTwoKey');
+    $this->assertSame([], $actual);
+  }
+
+  /**
+   * @test
+   * @expectedException OutOfBoundsException
+   */
+  public function getBreadCrumbsAliasNotFound()
+  {
+    $actual = RoutingUtil::getBreadCrumbs($this->routingConfig, 'indexTwoKeys');
+    // exception
   }
 }

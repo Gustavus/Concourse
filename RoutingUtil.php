@@ -74,4 +74,25 @@ class RoutingUtil extends Router
       throw new OutOfBoundsException("Alias: {$alias} not found in routing configuration");
     }
   }
+
+  /**
+   * Gets the breadCrumbs out of the routing configuration for a specific alias
+   *
+   * @param  array|string $routeConfig Full routing array or path to the full array
+   * @param  string $alias       alias to get crumbs for
+   *
+   * @throws  OutOfBoundsException If the alias cannot be found in the routing configuration
+   * @return array
+   */
+  public static function getBreadCrumbs($routeConfig, $alias = '/')
+  {
+    if (!is_array($routeConfig)) {
+      $routeConfig = include($routeConfig);
+    }
+    if (isset($routeConfig[$alias])) {
+      return isset($routeConfig[$alias]['breadCrumbs']) ? $routeConfig[$alias]['breadCrumbs'] : [];
+    } else {
+      throw new OutOfBoundsException("Alias: {$alias} not found in routing configuration");
+    }
+  }
 }
