@@ -494,4 +494,16 @@ class ControllerTest extends Test
     $actual = $this->controller->renderPage();
     $this->assertSame($expected, $actual['breadCrumbAdditions']);
   }
+
+  /**
+   * @test
+   */
+  public function urlifyAliasesInCrumbs()
+  {
+    $expected = [['text' => 'text', 'url' => self::BASE_DIR], ['url' => 'NExt url', 'text' => 'more text']];
+    $crumbs = [['alias' => 'index', 'text' => 'text'], ['url' => 'NExt url', 'text' => 'more text']];
+    $actual = $this->controller->urlifyAliasesInCrumbs($crumbs);
+
+    $this->assertSame($expected, $actual);
+  }
 }

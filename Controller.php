@@ -239,6 +239,18 @@ abstract class Controller
   }
 
   /**
+   * Sets bread crumbs
+   *
+   * @param array $breadCrumbs Array of arrays with text and url or alias as keys
+   * @return $this
+   */
+  protected function setBreadCrumbs(array $breadCrumbs)
+  {
+    $this->breadCrumbs = $breadCrumbs;
+    return $this;
+  }
+
+  /**
    * Gets breadcrumbs. If empty, it will look in the router for bread crumbs
    *
    * @return array
@@ -246,9 +258,28 @@ abstract class Controller
   protected function getBreadCrumbs()
   {
     if (empty($this->breadCrumbs)) {
-      return $this->findBreadCrumbsFromRoute();
+      $crumbs = $this->findBreadCrumbsFromRoute();
+    } else {
+      $crumbs = $this->breadCrumbs;
     }
-    return $this->breadCrumbs;
+    return $this->urlifyAliasesInCrumbs($crumbs);
+  }
+
+  /**
+   * Converts aliases in the breadcrumbs array to urls
+   *
+   * @param  array  $crumbs Array of arrays with keys of text and url or alias.
+   * @return array
+   */
+  private function urlifyAliasesInCrumbs(array $crumbs)
+  {
+    foreach ($crumbs as &$crumb) {
+      if (isset($crumb['alias'])) {
+        $crumb['url'] = $this->buildUrl($crumb['alias']);
+        unset($crumb['alias']);
+      }
+    }
+    return $crumbs;
   }
 
   /**
@@ -259,18 +290,6 @@ abstract class Controller
   private function findBreadCrumbsFromRoute()
   {
     return RoutingUtil::getBreadCrumbs($this->getRoutingConfiguration(), Router::$routeAlias);
-  }
-
-  /**
-   * Sets bread crumbs
-   *
-   * @param array $breadCrumbs Array of arrays with url and text keys
-   * @return $this
-   */
-  protected function setBreadCrumbs(array $breadCrumbs)
-  {
-    $this->breadCrumbs = $breadCrumbs;
-    return $this;
   }
 
   /**
