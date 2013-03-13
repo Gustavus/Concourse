@@ -26,6 +26,13 @@ use Gustavus\Gatekeeper\Gatekeeper;
 class Router
 {
   /**
+   * The alias of the found route
+   *
+   * @var string
+   */
+  public static $routeAlias;
+
+  /**
    * Header response code to use if the route isn't found
    * @var integer
    */
@@ -81,6 +88,7 @@ class Router
 
     if (($foundRoute = Router::findRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
+      self::$routeAlias = key($foundRoute);
       return Router::runHandler($routingConfig[key($foundRoute)], current($foundRoute));
     } else {
       // route not found
