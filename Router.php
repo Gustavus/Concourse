@@ -6,16 +6,11 @@
 
 namespace Gustavus\Concourse;
 
-// we want the template to start when we require it.
-// This will set up debugging and extreme maintenance.
-if (!defined('GUSTAVUS_START_TEMPLATE')) {
-  define('GUSTAVUS_START_TEMPLATE', true);
-}
-
-require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
+require_once 'template/request.class.php';
 
-use Gustavus\Gatekeeper\Gatekeeper;
+use Gustavus\Gatekeeper\Gatekeeper,
+  TemplatePageRequest;
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -70,6 +65,7 @@ class Router
    *         'handler' => '\Gustavus\Concourse\Test\RouterTestController:showItem',
    *         'visibleTo' => array('template', array('admin'))
    *         'breadCrumbs' => [['alias' => 'index', 'text' => 'text']],
+   *         'startTemplate' => false,  // only used for ajax or jsonp requests
    *     ),
    *   );
    * </code>
@@ -136,6 +132,21 @@ class Router
    */
   protected static function runHandler(array $routeConfig, array $args = array())
   {
+    if (!isset($routeConfig['startTemplate']) || $routeConfig['startTemplate']) {
+      $start = true;
+    } else {
+      $start = false;
+    }
+
+    if (!defined('GUSTAVUS_START_TEMPLATE')) {
+      define('GUSTAVUS_START_TEMPLATE', $start);
+    } else if (!defined('GUSTAVUS_FORCE_START_TEMPLATE') && $start) {
+      define('GUSTAVUS_FORCE_START_TEMPLATE', $start);
+    }
+    // we want the template to start when we require it unless specified otherwise in the routing configuration.
+    // This will set up debugging and extreme maintenance.
+    TemplatePageRequest::start();
+
     if (!Router::userCanAccessPage($routeConfig)) {
       header('HTTP/1.0 403 Forbidden');
       ob_start();
