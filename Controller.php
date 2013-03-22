@@ -552,9 +552,9 @@ abstract class Controller
   /**
    * Redirects to the specified path
    *
-   * @todo  Move this into a Utility class
    * @param  string $path path to redirect to.
    * @return void
+   * @todo  Move this into a Utility class
    */
   protected function redirect($path = '/')
   {
