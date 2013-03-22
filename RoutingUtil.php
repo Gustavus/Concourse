@@ -23,11 +23,12 @@ class RoutingUtil extends Router
    * @param  string $alias       alias to build url for
    * @param  array  $parameters  parameters to build url with. keyed by route param name
    * @param  string $baseDir    Application's root directory
+   * @param  boolean $fullUrl   Whether you want the full url or just the relative url
    *
    * @throws  OutOfBoundsException If the alias cannot be found in the routing configuration
    * @return string built url
    */
-  public static function buildUrl($routeConfig, $alias = '/', array $parameters = array(), $baseDir = '')
+  public static function buildUrl($routeConfig, $alias = '/', array $parameters = array(), $baseDir = '', $fullUrl = false)
   {
     if (!is_array($routeConfig)) {
       $routeConfig = include($routeConfig);
@@ -43,7 +44,15 @@ class RoutingUtil extends Router
           $route = preg_replace("`{{$key}.*?}`", $param, $route);
         }
       }
-      return str_replace('//', '/', $baseDir . $route);
+      $url = str_replace('//', '/', $baseDir . $route);
+      if ($fullUrl) {
+        return sprintf(
+            'https://%s%s',
+            $_SERVER['HTTP_HOST'],
+            $url
+        );
+      }
+      return $url;
     } else {
       throw new OutOfBoundsException("Alias: {$alias} not found in routing configuration");
     }

@@ -670,11 +670,12 @@ abstract class Controller
    * @param  string $alias       Alias to build url for
    * @param  array  $parameters  Params to put into url
    * @param  string $baseDir     Applications web root
+   * @param  boolean $fullUrl   Whether you want the full url or just the relative url
    * @return string
    */
-  public function buildUrl($alias, array $parameters = array(), $baseDir = '')
+  public function buildUrl($alias, array $parameters = array(), $baseDir = '', $fullUrl = false)
   {
-    return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters, $baseDir);
+    return RoutingUtil::buildUrl($this->getRoutingConfiguration(), $alias, $parameters, $baseDir, $fullUrl);
   }
 
   /**

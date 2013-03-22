@@ -78,6 +78,17 @@ class RoutingUtilTest extends Test
   /**
    * @test
    */
+  public function buildUrlFullUrl()
+  {
+    $_SERVER['SCRIPT_NAME'] = '/index.php';
+    $_SERVER['HTTP_HOST'] = 'gustavus.edu';
+    $expected = 'https://gustavus.edu/indexTwo/3';
+    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'indexTwo', array('id' => 3), '', true));
+  }
+
+  /**
+   * @test
+   */
   public function buildUrlParam()
   {
     $expected = '/arst/indexTwo/2';

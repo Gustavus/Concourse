@@ -380,6 +380,16 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function renderViewBuildUrlTemplate()
+  {
+    $_SERVER['HTTP_HOST'] = 'gustavus.edu';
+    $actual = $this->controller->renderView('/cis/lib/Gustavus/Concourse/Test/buildUrlBaseDir.html.twig', []);
+    $this->assertSame('https://gustavus.edu/', $actual);
+  }
+
+  /**
+   * @test
+   */
   public function renderErrorPage()
   {
     $actual = $this->controller->renderErrorPage('This is an error');
@@ -432,6 +442,16 @@ class ControllerTest extends Test
 
     $actual = $this->controller->renderTemplate('/cis/lib/Gustavus/Concourse/Test/twigExtension.html.twig');
     $this->assertTrue(strpos($actual['content'], $expected) !== false);
+  }
+
+  /**
+   * @test
+   */
+  public function buildUrlWithBaseDir()
+  {
+    $_SERVER['HTTP_HOST'] = 'gustavus.edu';
+    $expected = 'https://gustavus.edu/index/';
+    $this->assertSame($expected, $this->controller->buildUrl('index', [], '/index', true));
   }
 
   /**
