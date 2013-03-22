@@ -24,7 +24,7 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
 abstract class Controller
 {
   /**
-   * Contains the default Campus API key for all Symfony applications.
+   * Contains the default Campus API key for all Concourse applications.
    *
    * @var string
    */
