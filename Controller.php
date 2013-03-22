@@ -469,8 +469,7 @@ abstract class Controller
    */
   protected function getLoggedInUsername()
   {
-    $person = $this->getLoggedInPerson();
-    return ($person !== null) ? $person->getUsername() : null;
+    return Gatekeeper::getUsername();
   }
 
   /**
@@ -558,8 +557,7 @@ abstract class Controller
    */
   protected function redirect($path = '/')
   {
-    $_POST = null;
-    header('Location: ' . $path, true, 302);
+    ControllerUtil::redirect($path);
   }
 
   /**
