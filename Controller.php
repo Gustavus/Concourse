@@ -552,12 +552,15 @@ abstract class Controller
   /**
    * Redirects to the specified path
    *
+   * @todo  Move this into a Utility class
    * @param  string $path path to redirect to.
    * @return void
    */
   protected function redirect($path = '/')
   {
-    ControllerUtil::redirect($path);
+    $_POST = null;
+    header('Location: ' . $path, true, 303);
+    exit;
   }
 
   /**
