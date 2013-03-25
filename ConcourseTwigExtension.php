@@ -36,16 +36,13 @@ class ConcourseTwigExtension extends Twig_Extension
 
   /**
    * Alias to RoutingUtil::buildUrl
+   *   This takes in the same parameters as buildUrl in $this->controller
    *
-   * @param  string $alias       Alias to build url for
-   * @param  array  $parameters  Params to put into url
-   * @param  string $baseDir     Application's web root
-   * @param  boolean $fullUrl   Whether you want the full url or just the relative url
    * @return string
    */
-  public function buildUrl($alias, array $parameters = array(), $baseDir = '', $fullUrl = false)
+  public function buildUrl()
   {
-    return $this->controller->buildUrl($alias, $parameters, $baseDir, $fullUrl);
+    return call_user_func_array([$this->controller, 'buildUrl'], func_get_args());
   }
 
   /**
