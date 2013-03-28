@@ -217,6 +217,18 @@ abstract class Controller
   }
 
   /**
+   * Adds the stylesheets to the page.
+   *
+   * @param string $stylesheets the additional stylesheets HTML for the page
+   * @return $this
+   */
+  protected function addStylesheets($stylesheets)
+  {
+    $this->stylesheets .= $stylesheets;
+    return $this;
+  }
+
+  /**
    * Gets the javascript content on the page.
    *
    * @return string the javascript content on the page
@@ -235,6 +247,18 @@ abstract class Controller
   protected function setJavascripts($javascripts)
   {
     $this->javascripts = $javascripts;
+    return $this;
+  }
+
+  /**
+   * Adds the javascripts to the page.
+   *
+   * @param string $javascripts the additional javascripts HTML for the page
+   * @return $this
+   */
+  protected function addJavascripts($javascripts)
+  {
+    $this->javascripts .= $javascripts;
     return $this;
   }
 

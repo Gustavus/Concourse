@@ -126,6 +126,24 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function addStylesheets()
+  {
+    $this->controller->addStylesheets('hello');
+    $this->assertSame($this->controllerProperties['stylesheets'] . 'hello', $this->controller->getStylesheets());
+  }
+
+  /**
+   * @test
+   */
+  public function addJavascripts()
+  {
+    $this->controller->addJavascripts('hello');
+    $this->assertSame($this->controllerProperties['javascripts'] . 'hello', $this->controller->getJavascripts());
+  }
+
+  /**
+   * @test
+   */
   public function getContent()
   {
     $this->assertSame($this->controllerProperties['content'], $this->controller->getContent());
