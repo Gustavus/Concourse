@@ -462,19 +462,9 @@ abstract class Controller
       // add concourse extension
       self::$twig->addExtension(new ConcourseTwigExtension($this));
     }
-    $this->addTwigLoaderPathIfNeeded($viewDir);
-  }
-
-  /**
-   * Adds the path to Twig's Loader if it isn't already in there
-   *
-   * @param string $path Path to add
-   * @return  void
-   */
-  private function addTwigLoaderPathIfNeeded($path)
-  {
-    if (!in_array($path, self::$twig->getLoader()->getPaths())) {
-      self::$twig->getLoader()->addPath($path);
+    // make sure the specified path is in the loader
+    if (!in_array($viewDir, self::$twig->getLoader()->getPaths())) {
+      self::$twig->getLoader()->addPath($viewDir);
     }
   }
 

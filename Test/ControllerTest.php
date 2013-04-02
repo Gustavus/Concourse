@@ -421,7 +421,7 @@ class ControllerTest extends Test
   public function addTwigLoaderPathIfNeeded()
   {
     $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
-    $this->controller->addTwigLoaderPathIfNeeded('/cis/lib/Gustavus');
+    $this->controller->setUpTwig('/cis/lib/Gustavus');
     $twig = $this->get('Gustavus\Concourse\Controller', 'twig');
     $this->assertInstanceOf('Twig_Environment', $twig);
 
