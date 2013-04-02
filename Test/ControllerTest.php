@@ -408,6 +408,65 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function setUpTwig()
+  {
+    $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
+    $twig = $this->get('Gustavus\Concourse\Controller', 'twig');
+    $this->assertInstanceOf('Twig_Environment', $twig);
+  }
+
+  /**
+   * @test
+   */
+  public function addTwigLoaderPathIfNeeded()
+  {
+    $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
+    $this->controller->addTwigLoaderPathIfNeeded('/cis/lib/Gustavus');
+    $twig = $this->get('Gustavus\Concourse\Controller', 'twig');
+    $this->assertInstanceOf('Twig_Environment', $twig);
+
+    $expected = [
+      '/cis/lib/Gustavus/Concourse/Test',
+      '/cis/lib/Gustavus',
+    ];
+    $this->assertSame($expected, $twig->getLoader()->getPaths());
+  }
+
+  /**
+   * @test
+   */
+  public function getTwigEnvironment()
+  {
+    $env = $this->controller->getTwigEnvironment('/cis/lib/Gustavus/Concourse/Test');
+    $this->assertInstanceOf('Twig_Environment', $env);
+  }
+
+  /**
+   * @test
+   */
+  public function addTwigLoaderPath()
+  {
+    $this->set('Gustavus\Concourse\Controller', 'twig', null);
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse/Test');
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus');
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus');
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus');
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse');
+
+    $twig = $this->controller->getTwigEnvironment('/cis/lib/Gustavus/Concourse/Test');
+
+    $expected = [
+      '/cis/lib/Gustavus/Concourse/Test',
+      '/cis/lib/Gustavus',
+      '/cis/lib/Gustavus/Concourse',
+    ];
+
+    $this->assertSame($expected, $twig->getLoader()->getPaths());
+  }
+
+  /**
+   * @test
+   */
   public function renderErrorPage()
   {
     $actual = $this->controller->renderErrorPage('This is an error');

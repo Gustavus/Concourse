@@ -85,6 +85,13 @@ abstract class Controller
   protected static $newEm;
 
   /**
+   * The Twig Environment
+   *
+   * @var \Twig_Environment
+   */
+  protected static $twig;
+
+  /**
    * Gets the apiKey being used by the application.
    *
    * @return  string
@@ -415,11 +422,60 @@ abstract class Controller
    */
   protected function renderView($view, array $parameters = array())
   {
-    $twig = TwigFactory::getTwigFilesystem(dirname($view));
-    // add concourse extension
-    $twig->addExtension(new ConcourseTwigExtension($this));
+    return $this->getTwigEnvironment(dirname($view))->render(basename($view), $parameters);
+  }
 
-    return $twig->render(basename($view), $parameters);
+  /**
+   * Gets the twig environment set up with renderView
+   *
+   * @param  string $viewDir  Path to the view directory
+   * @return \Twig_Environment
+   */
+  protected function getTwigEnvironment($viewDir)
+  {
+    $this->setUpTwig($viewDir);
+
+    return self::$twig;
+  }
+
+  /**
+   * Adds a path to TwigEnvironment's loader
+   *
+   * @param string $path Path to add
+   * @return  void
+   */
+  protected function addTwigLoaderPath($path)
+  {
+    $this->setUpTwig($path);
+  }
+
+  /**
+   * Sets up the Twig environment with $viewDir in the loader paths
+   *
+   * @param string $viewDir path to the twig templates directory
+   * @return  void
+   */
+  private function setUpTwig($viewDir)
+  {
+    if (!isset(self::$twig)) {
+      self::$twig = TwigFactory::getTwigFilesystem($viewDir);
+      // add concourse extension
+      self::$twig->addExtension(new ConcourseTwigExtension($this));
+    }
+    $this->addTwigLoaderPathIfNeeded($viewDir);
+  }
+
+  /**
+   * Adds the path to Twig's Loader if it isn't already in there
+   *
+   * @param string $path Path to add
+   * @return  void
+   */
+  private function addTwigLoaderPathIfNeeded($path)
+  {
+    if (!in_array($path, self::$twig->getLoader()->getPaths())) {
+      self::$twig->getLoader()->addPath($path);
+    }
   }
 
   /**
