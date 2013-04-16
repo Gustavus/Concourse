@@ -89,7 +89,22 @@ abstract class Controller
    *
    * @var \Twig_Environment
    */
-  protected static $twig;
+  private $twig;
+
+  /**
+   * The alias of the found route we are using
+   */
+  private $routeAlias;
+
+  /**
+   * Constructs the object.
+   *
+   * @param string $routeAlias The alias of the current route we are using
+   */
+  public function __construct($routeAlias = '/')
+  {
+    $this->routeAlias = $routeAlias;
+  }
 
   /**
    * Gets the apiKey being used by the application.
@@ -320,7 +335,7 @@ abstract class Controller
    */
   private function findBreadCrumbsFromRoute()
   {
-    return RoutingUtil::getBreadCrumbs($this->getRoutingConfiguration(), Router::$routeAlias);
+    return RoutingUtil::getBreadCrumbs($this->getRoutingConfiguration(), $this->routeAlias);
   }
 
   /**
@@ -435,7 +450,7 @@ abstract class Controller
   {
     $this->setUpTwig($viewDir);
 
-    return self::$twig;
+    return $this->twig;
   }
 
   /**
@@ -457,14 +472,18 @@ abstract class Controller
    */
   private function setUpTwig($viewDir)
   {
-    if (!isset(self::$twig)) {
-      self::$twig = TwigFactory::getTwigFilesystem($viewDir);
-      // add concourse extension
-      self::$twig->addExtension(new ConcourseTwigExtension($this));
+    if (!isset($this->twig)) {
+      $this->twig = TwigFactory::getTwigFilesystem($viewDir);
+      // check to see if we need to add the extension
+      $extension = new ConcourseTwigExtension($this);
+      if (!$this->twig->hasExtension($extension->getName())) {
+        // add concourse extension
+        $this->twig->addExtension($extension);
+      }
     }
     // make sure the specified path is in the loader
-    if (!in_array($viewDir, self::$twig->getLoader()->getPaths())) {
-      self::$twig->getLoader()->addPath($viewDir);
+    if (!in_array($viewDir, $this->twig->getLoader()->getPaths())) {
+      $this->twig->getLoader()->addPath($viewDir);
     }
   }
 

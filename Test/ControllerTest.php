@@ -53,8 +53,7 @@ class ControllerTest extends Test
    */
   public function setUp()
   {
-    $this->set('\Gustavus\Concourse\Router', 'routeAlias', 'indexTwo');
-    $this->controller = new TestObject(new ControllerTestController);
+    $this->controller = new TestObject(new ControllerTestController('indexTwo'));
 
     foreach ($this->controllerProperties as $key => $value) {
       $function = 'set' . ucfirst($key);
@@ -411,8 +410,7 @@ class ControllerTest extends Test
   public function setUpTwig()
   {
     $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
-    $twig = $this->get('Gustavus\Concourse\Controller', 'twig');
-    $this->assertInstanceOf('Twig_Environment', $twig);
+    $this->assertInstanceOf('Twig_Environment', $this->controller->twig);
   }
 
   /**
@@ -420,16 +418,16 @@ class ControllerTest extends Test
    */
   public function addTwigLoaderPathIfNeeded()
   {
+    $this->controller->twig = null;
     $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
     $this->controller->setUpTwig('/cis/lib/Gustavus');
-    $twig = $this->get('Gustavus\Concourse\Controller', 'twig');
-    $this->assertInstanceOf('Twig_Environment', $twig);
+    $this->assertInstanceOf('Twig_Environment', $this->controller->twig);
 
     $expected = [
       '/cis/lib/Gustavus/Concourse/Test',
       '/cis/lib/Gustavus',
     ];
-    $this->assertSame($expected, $twig->getLoader()->getPaths());
+    $this->assertSame($expected, $this->controller->twig->getLoader()->getPaths());
   }
 
   /**
@@ -446,7 +444,7 @@ class ControllerTest extends Test
    */
   public function addTwigLoaderPath()
   {
-    $this->set('Gustavus\Concourse\Controller', 'twig', null);
+    $this->controller->twig = null;
     $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse/Test');
     $this->controller->addTwigLoaderPath('/cis/lib/Gustavus');
     $this->controller->addTwigLoaderPath('/cis/lib/Gustavus');
