@@ -90,8 +90,7 @@ class Router
 
     if (($foundRoute = Router::findRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
-      self::$routeAlias = key($foundRoute);
-      return Router::runHandler($routingConfig[key($foundRoute)], current($foundRoute));
+      return Router::runHandler(key($foundRoute), $routingConfig[key($foundRoute)], current($foundRoute), key($foundRoute));
     } else {
       // route not found
       return Router::handleRouteNotFound();
@@ -130,11 +129,12 @@ class Router
   /**
    * Runs the handler set in $routeConfig
    *
-   * @param  array $routeConfig
-   * @param  array $args  arguments to pass onto the controller
+   * @param  string $alias the alias we are running the handler for
+   * @param  array  $routeConfig
+   * @param  array  $args  arguments to pass onto the controller
    * @return string false if user can't access page. String otherwise
    */
-  protected static function runHandler(array $routeConfig, array $args = array())
+  protected static function runHandler($alias, array $routeConfig, array $args = array())
   {
     if (!Router::userCanAccessPage($routeConfig)) {
       header('HTTP/1.0 403 Forbidden');
@@ -150,11 +150,11 @@ class Router
 
     $handler = explode(':', $routeConfig['handler']);
     if (empty($args)) {
-      return call_user_func(array(new $handler[0], $handler[1]));
+      return call_user_func(array(new $handler[0]($alias), $handler[1]));
     }
     // pass the associative array created by analyzeSplitRoutes.
     // This requires the handlers to take in one argument
-    return call_user_func(array(new $handler[0], $handler[1]), $args);
+    return call_user_func(array(new $handler[0]($alias), $handler[1]), $args);
 
   }
 

@@ -276,8 +276,30 @@ class RouterTest extends Test
     $this->unAuthenticate();
   }
 
+  /**
+   * Callback for testing callbacks
+   * @return boolean
+   */
   public function someCallback()
   {
     return false;
+  }
+
+  /**
+   * @test
+   */
+  public function runHandler()
+  {
+    $actual = $this->call('\Gustavus\Concourse\Router', 'runHandler', ['index', $this->routingConfig['index']]);
+    $this->assertSame('RouterTestController index()', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function runHandlerAdvanced()
+  {
+    $actual = $this->call('\Gustavus\Concourse\Router', 'runHandler', ['indexTwo', $this->routingConfig['indexTwo'], ['id' => 23]]);
+    $this->assertSame('RouterTestController indexTwo(23)', $actual);
   }
 }
