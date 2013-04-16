@@ -187,4 +187,23 @@ class RoutingUtilTest extends Test
     $actual = RoutingUtil::getBreadCrumbs($this->routingConfig, 'indexTwoKeys');
     // exception
   }
+
+  /**
+   * @test
+   */
+  public function findHandlerAlias()
+  {
+    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findHandlerAlias', array($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwo'));
+    $this->assertSame('indexTwo', $actual);
+  }
+
+  /**
+   * @test
+   * @expectedException OutOfBoundsException
+   */
+  public function findHandlerAliasNotFound()
+  {
+    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findHandlerAlias', array($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwoarst'));
+    // exception
+  }
 }
