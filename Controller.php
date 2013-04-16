@@ -82,7 +82,7 @@ abstract class Controller
    *
    * @var Doctrine\ORM\EntityManager
    */
-  protected $newEm;
+  private $newEm;
 
   /**
    * The Twig Environment
