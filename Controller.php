@@ -75,14 +75,14 @@ abstract class Controller
    *
    * @var Doctrine\ORM\EntityManager
    */
-  private static $em;
+  private $em;
 
   /**
    * If we want a fresh entity manager, it gets stored here in case we need it
    *
    * @var Doctrine\ORM\EntityManager
    */
-  protected static $newEm;
+  protected $newEm;
 
   /**
    * The Twig Environment
@@ -101,7 +101,7 @@ abstract class Controller
    *
    * @param string $routeAlias The alias of the current route we are using
    */
-  public function __construct($routeAlias = '/')
+  public function __construct($routeAlias = null)
   {
     $this->routeAlias = $routeAlias;
   }
@@ -335,6 +335,9 @@ abstract class Controller
    */
   private function findBreadCrumbsFromRoute()
   {
+    if (empty($this->routeAlias)) {
+      return [];
+    }
     return RoutingUtil::getBreadCrumbs($this->getRoutingConfiguration(), $this->routeAlias);
   }
 
@@ -603,13 +606,13 @@ abstract class Controller
   protected function getEM($applicationPath, $dbName = '', $new = false, $pdo = null)
   {
     if ($new) {
-      self::$newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
-      return self::$newEm;
+      $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+      return $this->newEm;
     }
-    if (!isset(self::$em)) {
-      self::$em = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+    if (!isset($this->em)) {
+      $this->em = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
     }
-    return self::$em;
+    return $this->em;
   }
 
   /**
@@ -622,10 +625,10 @@ abstract class Controller
    */
   protected function getNewEM($applicationPath = '', $dbName = '', $pdo = null)
   {
-    if (!isset(self::$newEm)) {
-      self::$newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+    if (!isset($this->newEm)) {
+      $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
     }
-    return self::$newEm;
+    return $this->newEm;
   }
 
   /**
