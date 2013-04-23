@@ -141,7 +141,7 @@ class Router
       ob_start();
 
       $_SERVER['REDIRECT_STATUS'] = 403;
-      $_SERVER['REDIRECT_URL'] = $_SERVER['HTTP_REFERER'];
+      $_SERVER['REDIRECT_URL'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'https://gustavus.edu';
       include_once('/cis/www/errorPages/error.php');
 
       ob_end_flush();
