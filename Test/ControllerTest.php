@@ -465,6 +465,29 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function resetTwigLoaderPaths()
+  {
+    $this->controller->twig = null;
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse/Test');
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus');
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse');
+
+    $twig = $this->controller->getTwigEnvironment('/cis/lib/Gustavus/Concourse/Test');
+
+    $expected = [
+      '/cis/lib/Gustavus/Concourse/Test',
+      '/cis/lib/Gustavus',
+      '/cis/lib/Gustavus/Concourse',
+    ];
+
+    $this->assertSame($expected, $twig->getLoader()->getPaths());
+    $this->controller->resetTwigLoaderPaths();
+    $this->assertEmpty($twig->getLoader()->getPaths());
+  }
+
+  /**
+   * @test
+   */
   public function renderErrorPage()
   {
     $actual = $this->controller->renderErrorPage('This is an error');

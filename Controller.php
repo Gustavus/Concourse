@@ -468,6 +468,18 @@ abstract class Controller
   }
 
   /**
+   * Resets the paths for TwigEnvironment's loader
+   *
+   * @return void
+   */
+  protected function resetTwigLoaderPaths()
+  {
+    if (isset($this->twig)) {
+      $this->twig->getLoader()->setPaths([]);
+    }
+  }
+
+  /**
    * Sets up the Twig environment with $viewDir in the loader paths
    *
    * @param string $viewDir path to the twig templates directory
