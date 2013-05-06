@@ -13,7 +13,8 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Doctrine\EntityManager,
   Gustavus\TwigFactory\TwigFactory,
   Campus\Pull\People,
-  Gustavus\Concourse\RoutingUtil;
+  Gustavus\Concourse\RoutingUtil,
+  Gustavus\Utility\PageUtil;
 
 /**
  * Shared controller for all Concourse applications
@@ -658,13 +659,10 @@ abstract class Controller
    *
    * @param  string $path path to redirect to.
    * @return void
-   * @todo  Move this into a Utility class
    */
   protected function redirect($path = '/')
   {
-    $_POST = null;
-    header('Location: ' . $path, true, 303);
-    exit;
+    PageUtil::redirect($path, 303);
   }
 
   /**
@@ -676,7 +674,7 @@ abstract class Controller
    */
   protected function redirectWithMessage($path = '/', $message = '')
   {
-    $this->setSessionMessage($message, false);
+    $this->setSessionMessage($message, false, $path);
     $this->redirect($path);
   }
 
@@ -689,20 +687,8 @@ abstract class Controller
    */
   protected function redirectWithError($path = '/', $message = '')
   {
-    $this->setSessionMessage($message, true);
+    $this->setSessionMessage($message, true, $path);
     $this->redirect($path);
-  }
-
-  /**
-   * Checks so see if the session is already started, if not, it starts one.
-   *
-   * @return void
-   */
-  private static function startSessionIfNeeded()
-  {
-    if (session_id() === '') {
-      session_start();
-    }
   }
 
   /**
@@ -710,16 +696,15 @@ abstract class Controller
    *
    * @param string  $message message to display
    * @param boolean $isError whether this is an error message or not
+   * @param string  $path of the page the message should be displayed on
    * @return  void
    */
-  protected function setSessionMessage($message = '', $isError = false)
+  protected function setSessionMessage($message = '', $isError = false, $path = null)
   {
-    self::startSessionIfNeeded();
-    if ($isError) {
-      $_SESSION['concourseErrorMessage'] = $message;
-    } else {
-      $_SESSION['concourseMessage'] = $message;
+    if ($path === null) {
+      $path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
     }
+    PageUtil::setSessionMessage($message, $isError, $path);
   }
 
   /**
@@ -729,14 +714,17 @@ abstract class Controller
    */
   protected function addSessionMessages()
   {
-    self::startSessionIfNeeded();
-    if (isset($_SESSION['concourseMessage'])) {
-      $this->addMessageToTop($_SESSION['concourseMessage']);
-      unset($_SESSION['concourseMessage']);
+    $path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+
+    // look for session messages that we may need to add to the top of the content
+    $message = PageUtil::getSessionMessage($path);
+    if (!empty($message)) {
+      $this->addMessageToTop($message);
     }
-    if (isset($_SESSION['concourseErrorMessage'])) {
-      $this->addErrorToTop($_SESSION['concourseErrorMessage']);
-      unset($_SESSION['concourseErrorMessage']);
+
+    $errorMessage = PageUtil::getSessionErrorMessage($path);
+    if (!empty($errorMessage)) {
+      $this->addErrorToTop($errorMessage);
     }
   }
 

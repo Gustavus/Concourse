@@ -359,9 +359,24 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function setAndGetMessage()
+  {
+    $this->controller->setSessionMessage('testMessage', false, '/test/arst/test');
+
+    $_SERVER['REQUEST_URI'] = '/test/arst/test';
+
+    $this->controller->addSessionMessages();
+    $this->assertContains('testMessage', $this->controller->getContent());
+  }
+
+  /**
+   * @test
+   */
   public function redirectWithMessage()
   {
     $this->controller->redirectWithMessage('/', 'someTestMessage');
+
+    $_SERVER['REQUEST_URI'] = '/';
     $actual = $this->controller->renderPage();
     $this->assertTrue(strpos($actual['content'], '<p class="message">someTestMessage') !== false);
   }
@@ -372,6 +387,8 @@ class ControllerTest extends Test
   public function redirectWithError()
   {
     $this->controller->redirectWithError('/', 'someTestErrorMessage');
+
+    $_SERVER['REQUEST_URI'] = '/';
     $actual = $this->controller->renderPage();
     $this->assertTrue(strpos($actual['content'], '<p class="error">someTestErrorMessage') !== false);
   }
