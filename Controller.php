@@ -658,11 +658,12 @@ abstract class Controller
    * Redirects to the specified path
    *
    * @param  string $path path to redirect to.
+   * @param  integer $statusCode Redirection status code
    * @return void
    */
-  protected function redirect($path = '/')
+  protected function redirect($path = '/', $statusCode = 303)
   {
-    PageUtil::redirect($path, 303);
+    PageUtil::redirect($path, $statusCode);
   }
 
   /**
@@ -670,12 +671,13 @@ abstract class Controller
    *
    * @param  string $path    path to redirect to.
    * @param  string $message message to display on redirect
+   * @param  integer $statusCode Redirection status code
    * @return void
    */
-  protected function redirectWithMessage($path = '/', $message = '')
+  protected function redirectWithMessage($path = '/', $message = '', $statusCode = 303)
   {
     $this->setSessionMessage($message, false, $path);
-    $this->redirect($path);
+    $this->redirect($path, $statusCode);
   }
 
   /**
@@ -683,12 +685,13 @@ abstract class Controller
    *
    * @param  string $path    path to redirect to.
    * @param  string $message message to display on redirect
+   * @param  integer $statusCode Redirection status code
    * @return void
    */
-  protected function redirectWithError($path = '/', $message = '')
+  protected function redirectWithError($path = '/', $message = '', $statusCode = 303)
   {
     $this->setSessionMessage($message, true, $path);
-    $this->redirect($path);
+    $this->redirect($path, $statusCode);
   }
 
   /**

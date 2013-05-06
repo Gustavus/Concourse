@@ -52,9 +52,10 @@ class ControllerTestController extends Controller
    * overloads redirect for testing so we don't try to redirect
    *
    * @param  string $path
+   * @param  integer $statusCode Redirection status code
    * @return void
    */
-  protected function redirect($path = '/')
+  protected function redirect($path = '/', $statusCode = 303)
   {
     $_POST = null;
   }
