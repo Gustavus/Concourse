@@ -75,13 +75,19 @@ class RoutingUtil extends Router
     }
     if (strpos($alias, ':') !== false) {
       // the alias is actually the handler that we want to forward onto.
-      $alias = self::findHandlerAlias($routeConfig, $alias);
+      $alias = self::findForwardingHandlerAlias($routeConfig, $alias);
     }
-    if (isset($routeConfig[$alias])) {
-      return Router::runHandler($alias, $routeConfig[$alias], $parameters);
+    if (is_array($alias)) {
+      // alias wasn't found, we got a default configuration array.
+      $foundRouteConfig = $alias;
+    } else if (isset($routeConfig[$alias])) {
+      // alias exists
+      $foundRouteConfig = $routeConfig[$alias];
     } else {
+      // not found
       throw new OutOfBoundsException("Alias: {$alias} not found in routing configuration");
     }
+    return Router::runHandler($alias, $foundRouteConfig, $parameters);
   }
 
   /**
@@ -90,17 +96,19 @@ class RoutingUtil extends Router
    * @param  array  $routeConfig Full routing array
    * @param  string $handler     Handler we are wanting to find
    *
-   * @throws  OutOfBoundsException If the handler cannot be found in the routing configuration
-   * @return string
+   * @return string|array String if the handler is found, array if not.
    */
-  private static function findHandlerAlias($routeConfig, $handler)
+  private static function findForwardingHandlerAlias($routeConfig, $handler)
   {
     foreach ($routeConfig as $alias => $config) {
       if ($handler === $config['handler']) {
         return $alias;
       }
     }
-    throw new OutOfBoundsException("Handler: {$handler} not found in routing configuration");
+    // not found, return a default public config array
+    return [
+      'handler' => $handler,
+    ];
   }
 
   /**

@@ -191,19 +191,19 @@ class RoutingUtilTest extends Test
   /**
    * @test
    */
-  public function findHandlerAlias()
+  public function findForwardingHandlerAlias()
   {
-    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findHandlerAlias', array($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwo'));
+    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findForwardingHandlerAlias', array($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwo'));
     $this->assertSame('indexTwo', $actual);
   }
 
   /**
    * @test
-   * @expectedException OutOfBoundsException
    */
-  public function findHandlerAliasNotFound()
+  public function findForwardingHandlerAliasNotFound()
   {
-    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findHandlerAlias', array($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwoarst'));
-    // exception
+    $expected = ['handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwoarst'];
+    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findForwardingHandlerAlias', array($this->routingConfig, '\Gustavus\Concourse\Test\RouterTestController:indexTwoarst'));
+    $this->assertSame($expected, $actual);
   }
 }
