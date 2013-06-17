@@ -48,4 +48,24 @@ abstract class TimestampedEntity
    * @return  void
    */
   abstract public function setModifiedValue();
+
+  /**
+   * Gets created value
+   *
+   * @return DateTime
+   */
+  public function getCreatedValue()
+  {
+    return $this->created;
+  }
+
+  /**
+   * Gets modified value
+   *
+   * @return DateTime
+   */
+  public function getModifiedValue()
+  {
+    return $this->modified;
+  }
 }
