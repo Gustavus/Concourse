@@ -22,7 +22,12 @@ use Gustavus\Test\Test,
  */
 class ControllerTest extends Test
 {
+  /**
+   * Used to hang onto session data from test to test
+   * @var array
+   */
   private static $sessionData;
+
   /**
    * Base Directory for urls
    */
