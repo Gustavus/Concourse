@@ -801,9 +801,9 @@ abstract class Controller
    * Checks to see if we have a form to restore to return. If not, we prepare
    * Builds a form using FormBuilder and adds BotLure to the form.
    *
-   * @param  string $formKey               Key the form uses for saving and submiting
-   * @param  callable  $configurationCallable Callback used to get the configuration array if needed
-   * @param  array $callableParameters    Parameters to pass onto the callable
+   * @param  string   $formKey               Key the form uses for saving and submiting
+   * @param  callable $configurationCallable Callback used to get the configuration array if needed
+   * @param  array    $callableParameters    Parameters to pass onto the callable
    * @return FormBuilder
    */
   protected function buildForm($formKey, callable $configurationCallable, $callableParameters = null)
@@ -824,10 +824,11 @@ abstract class Controller
   /**
    * Prepares a form using FormBuilder and adds ButLure to it
    *
-   * @param  array $config  Configuration array to build a form from
-   * @param  string $formKey Key of the form
-   * @param  mixed $version Version of the form
-   * @param  mixed $ttl Amount of time the form is kept around
+   * @param  array   $config   Configuration array to build a form from
+   * @param  string  $formKey  Key of the form
+   * @param  mixed   $version  Version of the form
+   * @param  mixed   $ttl      Amount of time the form is kept around
+   * @param  boolean $serialize Whether to serialize the form before storing it or not
    * @return  FormBuilder The prepared form
    */
   protected function prepareForm($config, $formKey = null, $version = null, $ttl = null, $serialize = false)
@@ -844,8 +845,8 @@ abstract class Controller
    * Restores a form from FormBuilder
    *
    * @param  string $formKey Key of the form to restore
-   * @param  mixed $version Version of the form
-   * @param  mixed $ttl     Amount of time the form is kept around
+   * @param  mixed  $version Version of the form
+   * @param  mixed  $ttl     Amount of time the form is kept around
    * @return FormBuilder
    */
   protected function restoreForm($formKey = null, $version = null, $ttl = null)
