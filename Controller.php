@@ -14,7 +14,9 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\TwigFactory\TwigFactory,
   Campus\Pull\People,
   Gustavus\Concourse\RoutingUtil,
-  Gustavus\Utility\PageUtil;
+  Gustavus\Utility\PageUtil,
+  Gustavus\FormBuilderMk2\FormBuilder,
+  Gustavus\FormBuilderMk2\Util\BotLure;
 
 /**
  * Shared controller for all Concourse applications
@@ -783,5 +785,74 @@ abstract class Controller
   protected function forward($alias, array $parameters = array())
   {
     return RoutingUtil::forward($this->getRoutingConfiguration(), $alias, $parameters);
+  }
+
+  /**
+   * Gets the version for the application
+   *
+   * @return string
+   */
+  protected function getApplicationVersion()
+  {
+    return '0.0.0';
+  }
+
+  /**
+   * Checks to see if we have a form to restore to return. If not, we prepare
+   * Builds a form using FormBuilder and adds BotLure to the form.
+   *
+   * @param  string $formKey               Key the form uses for saving and submiting
+   * @param  callable  $configurationCallable Callback used to get the configuration array if needed
+   * @param  array $callableParameters    Parameters to pass onto the callable
+   * @return FormBuilder
+   */
+  protected function buildForm($formKey, callable $configurationCallable, $callableParameters = null)
+  {
+    $form = $this->restoreForm($formKey, $this->getApplicationVersion());
+    if ($form === null) {
+      // no form to restore. Need to build one.
+      if (empty($callableParameters)) {
+        $config = call_user_func($configurationCallable);
+      } else {
+        $config = call_user_func_array($configurationCallable, $callableParameters);
+      }
+      $form = $this->prepareForm($config, $formKey, $this->getApplicationVersion());
+    }
+    return $form;
+  }
+
+  /**
+   * Prepares a form using FormBuilder and adds ButLure to it
+   *
+   * @param  array $config  Configuration array to build a form from
+   * @param  string $formKey Key of the form
+   * @param  mixed $version Version of the form
+   * @param  mixed $ttl Amount of time the form is kept around
+   * @return  FormBuilder The prepared form
+   */
+  protected function prepareForm($config, $formKey = null, $version = null, $ttl = null, $serialize = false)
+  {
+    if ($version === null) {
+      $version = $this->getApplicationVersion();
+    }
+    $form = FormBuilder::prepareForm($config, $formKey, $version, $ttl, $serialize);
+    $form->addChildren(new BotLure);
+    return $form;
+  }
+
+  /**
+   * Restores a form from FormBuilder
+   *
+   * @param  string $formKey Key of the form to restore
+   * @param  mixed $version Version of the form
+   * @param  mixed $ttl     Amount of time the form is kept around
+   * @return FormBuilder
+   */
+  protected function restoreForm($formKey = null, $version = null, $ttl = null)
+  {
+    if ($version === null) {
+      $version = $this->getApplicationVersion();
+    }
+    return FormBuilder::restoreForm($formKey, $version, $ttl);
   }
 }

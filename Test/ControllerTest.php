@@ -22,6 +22,7 @@ use Gustavus\Test\Test,
  */
 class ControllerTest extends Test
 {
+  private static $sessionData;
   /**
    * Base Directory for urls
    */
@@ -640,5 +641,106 @@ class ControllerTest extends Test
     $actual = $this->controller->urlifyAliasesInCrumbs($crumbs);
 
     $this->assertSame($expected, $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function buildForm()
+  {
+    $form = $this->controller->buildForm('testForm', [$this, 'getFormConfiguration']);
+    $rendered = $form->render();
+    $this->assertContains('Some Random Title', $rendered);
+    $this->assertContains('nodisplay', $rendered);
+    self::$sessionData = $_SESSION;
+  }
+
+  /**
+   * Builds the configuration for a form
+   * @return array
+   */
+  public function getFormConfiguration()
+  {
+    $config = [
+      'name'     => 'sometestform',
+      'type'     => 'form',
+      'action'   => '/cis/www/someRandomRequestURI',
+      'method'   => 'post',
+      'children' => [
+        [
+          'type'  => 'text',
+          'title' => 'Some Random Title',
+        ],
+      ]
+    ];
+    return $config;
+  }
+
+  /**
+   * Builds the configuration for a form
+   * @return array
+   */
+  public function getFormConfigurationFake()
+  {
+    $config = [
+      'name'     => 'sometestform',
+      'type'     => 'form',
+      'action'   => '/cis/www/someRandomRequestURI',
+      'method'   => 'post',
+      'children' => [
+        [
+          'type'  => 'text',
+          'title' => 'A fake form title',
+        ],
+      ]
+    ];
+    return $config;
+  }
+
+  /**
+   * @test
+   * @dependsOn buildForm
+   */
+  public function buildFormAfterAlreadyBuilt()
+  {
+    $_SESSION = self::$sessionData;
+    $form = $this->controller->buildForm('testForm', [$this, 'getFormConfigurationFake']);
+    $rendered = $form->render();
+    $this->assertNotContains('A fake form title', $rendered);
+    $this->assertContains('Some Random Title', $rendered);
+    $this->assertContains('nodisplay', $rendered);
+  }
+
+  /**
+   * @test
+   */
+  public function buildFormCallbaleParam()
+  {
+    $form = $this->controller->buildForm('testForm2', [$this, 'getFormConfigurationWithParam'], ['Some Random Text']);
+    $rendered = $form->render();
+    $this->assertContains('Some Random Text', $rendered);
+    $this->assertContains('nodisplay', $rendered);
+  }
+
+  /**
+   * Builds the configuration for a form
+   * @param  string $title title to use
+   * @return array
+   */
+  public function getFormConfigurationWithParam($title)
+  {
+    $config = [
+      'name'     => 'sometestform',
+      'type'     => 'form',
+      'action'   => '/cis/www/someRandomRequestURI',
+      'method'   => 'post',
+      'children' => [
+        [
+          'type'  => 'text',
+          'title' => $title,
+        ],
+      ]
+    ];
+    return $config;
   }
 }
