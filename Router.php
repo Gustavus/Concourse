@@ -171,14 +171,17 @@ class Router
     $splitRoute = explode('/', trim($route, '/'));
 
     foreach ($routes as $key => $value) {
-      $splitKey = explode('/', trim($value['route'], '/'));
-      //$splitKey = explode('/', trim($key, '/'));
-      if (count($splitKey) === count($splitRoute)) {
-        // we might have a match. Let's look to see how close they match
-        $analyzeResult = Router::analyzeSplitRoutes($splitKey, $splitRoute);
-        if ($analyzeResult !== false) {
-          // we have a match!
-          return [$key => $analyzeResult];
+      // make sure this piece has a route.
+      if (isset($value['route'])) {
+        $splitKey = explode('/', trim($value['route'], '/'));
+        //$splitKey = explode('/', trim($key, '/'));
+        if (count($splitKey) === count($splitRoute)) {
+          // we might have a match. Let's look to see how close they match
+          $analyzeResult = Router::analyzeSplitRoutes($splitKey, $splitRoute);
+          if ($analyzeResult !== false) {
+            // we have a match!
+            return [$key => $analyzeResult];
+          }
         }
       }
     }
