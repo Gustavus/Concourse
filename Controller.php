@@ -804,11 +804,15 @@ abstract class Controller
    * @param  string   $formKey               Key the form uses for saving and submiting
    * @param  callable $configurationCallable Callback used to get the configuration array if needed
    * @param  array    $callableParameters    Parameters to pass onto the callable
+   * @param  mixed    $version  Version of the form
    * @return FormBuilder
    */
-  protected function buildForm($formKey, callable $configurationCallable, $callableParameters = null)
+  protected function buildForm($formKey, callable $configurationCallable, $callableParameters = null, $version = null)
   {
-    $form = $this->restoreForm($formKey, $this->getApplicationVersion());
+    if ($version === null) {
+      $version = $this->getApplicationVersion();
+    }
+    $form = $this->restoreForm($formKey, $version);
     if ($form === null) {
       // no form to restore. Need to build one.
       if (empty($callableParameters)) {
@@ -816,7 +820,7 @@ abstract class Controller
       } else {
         $config = call_user_func_array($configurationCallable, $callableParameters);
       }
-      $form = $this->prepareForm($config, $formKey, $this->getApplicationVersion());
+      $form = $this->prepareForm($config, $formKey, $version);
     }
     return $form;
   }
