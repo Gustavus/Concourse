@@ -13,7 +13,8 @@ use Gustavus\Test\Test,
   Gustavus\Test\TestObject,
   Gustavus\Concourse\Controller,
   Gustavus\Concourse\Test\ControllerTestController,
-  Gustavus\Gatekeeper\Gatekeeper;
+  Gustavus\Gatekeeper\Gatekeeper,
+  Gustavus\FormBuilderMk2\ElementRenderers\TwigElementRenderer;
 
 /**
  * @package Concourse
@@ -654,7 +655,8 @@ class ControllerTest extends Test
   public function buildForm()
   {
     $form = $this->controller->buildForm('testForm', [$this, 'getFormConfiguration']);
-    $rendered = $form->render();
+    $renderer = new TwigElementRenderer();
+    $rendered = $renderer->render($form);
     $this->assertContains('Some Random Title', $rendered);
     $this->assertContains('nodisplay', $rendered);
     self::$sessionData = $_SESSION;
@@ -710,7 +712,8 @@ class ControllerTest extends Test
   {
     $_SESSION = self::$sessionData;
     $form = $this->controller->buildForm('testForm', [$this, 'getFormConfigurationFake']);
-    $rendered = $form->render();
+    $renderer = new TwigElementRenderer();
+    $rendered = $renderer->render($form);
     $this->assertNotContains('A fake form title', $rendered);
     $this->assertContains('Some Random Title', $rendered);
     $this->assertContains('nodisplay', $rendered);
@@ -722,7 +725,8 @@ class ControllerTest extends Test
   public function buildFormCallbaleParam()
   {
     $form = $this->controller->buildForm('testForm2', [$this, 'getFormConfigurationWithParam'], ['Some Random Text']);
-    $rendered = $form->render();
+    $renderer = new TwigElementRenderer();
+    $rendered = $renderer->render($form);
     $this->assertContains('Some Random Text', $rendered);
     $this->assertContains('nodisplay', $rendered);
   }
