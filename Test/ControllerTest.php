@@ -664,6 +664,19 @@ class ControllerTest extends Test
 
   /**
    * @test
+   * @expectedException InvalidArgumentException
+   */
+  public function buildFormException()
+  {
+    $form = $this->controller->buildForm('testForm', 'arst');
+    $renderer = new TwigElementRenderer();
+    $rendered = $renderer->render($form);
+    // should not get here because an exception should have been thrown.
+    self::$sessionData = $_SESSION;
+  }
+
+  /**
+   * @test
    */
   public function buildFormCallable()
   {

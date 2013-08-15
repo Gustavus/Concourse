@@ -16,7 +16,8 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Concourse\RoutingUtil,
   Gustavus\Utility\PageUtil,
   Gustavus\FormBuilderMk2\FormBuilder,
-  Gustavus\FormBuilderMk2\Util\BotLure;
+  Gustavus\FormBuilderMk2\Util\BotLure,
+  InvalidArgumentException;
 
 /**
  * Shared controller for all Concourse applications
@@ -806,6 +807,8 @@ abstract class Controller
    *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
    * @param  mixed    $version  Version of the form
+   *
+   * @throws  InvalidArgumentException If $configuration is not an array or a callable
    * @return FormBuilder
    */
   protected function buildForm($formKey, $configuration, $callableParameters = null, $version = null)
@@ -823,6 +826,10 @@ abstract class Controller
           $config = call_user_func_array($configuration, $callableParameters);
         }
       } else {
+        if (!is_array($configuration)) {
+          // not an array. invalid argument.
+          throw new InvalidArgumentException('Configuration must be either an array or a callable.');
+        }
         $config = $configuration;
       }
       $form = $this->prepareForm($config, $formKey, $version);
