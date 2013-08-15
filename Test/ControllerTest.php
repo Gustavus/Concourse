@@ -654,6 +654,19 @@ class ControllerTest extends Test
    */
   public function buildForm()
   {
+    $form = $this->controller->buildForm('testForm', $this->getFormConfiguration());
+    $renderer = new TwigElementRenderer();
+    $rendered = $renderer->render($form);
+    $this->assertContains('Some Random Title', $rendered);
+    $this->assertContains('nodisplay', $rendered);
+    self::$sessionData = $_SESSION;
+  }
+
+  /**
+   * @test
+   */
+  public function buildFormCallable()
+  {
     $form = $this->controller->buildForm('testForm', [$this, 'getFormConfiguration']);
     $renderer = new TwigElementRenderer();
     $rendered = $renderer->render($form);

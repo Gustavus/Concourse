@@ -802,12 +802,13 @@ abstract class Controller
    * Builds a form using FormBuilder and adds BotLure to the form.
    *
    * @param  string   $formKey               Key the form uses for saving and submiting
-   * @param  callable $configurationCallable Callback used to get the configuration array if needed
+   * @param  callable|array $configuration   Callback used to get the configuration array if needed, or the configuration array itself.
+   *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
    * @param  mixed    $version  Version of the form
    * @return FormBuilder
    */
-  protected function buildForm($formKey, callable $configurationCallable, $callableParameters = null, $version = null)
+  protected function buildForm($formKey, $configuration, $callableParameters = null, $version = null)
   {
     if ($version === null) {
       $version = $this->getApplicationVersion();
@@ -815,12 +816,18 @@ abstract class Controller
     $form = $this->restoreForm($formKey, $version);
     if ($form === null) {
       // no form to restore. Need to build one.
-      if (empty($callableParameters)) {
-        $config = call_user_func($configurationCallable);
+      if (is_callable($configuration)) {
+        if (empty($callableParameters)) {
+          $config = call_user_func($configuration);
+        } else {
+          $config = call_user_func_array($configuration, $callableParameters);
+        }
       } else {
-        $config = call_user_func_array($configurationCallable, $callableParameters);
+        $config = $configuration;
       }
       $form = $this->prepareForm($config, $formKey, $version);
+      // restore form in case we have post-data to populate with
+      $form = $this->restoreForm($formKey, $version);
     }
     return $form;
   }
@@ -841,6 +848,7 @@ abstract class Controller
       $version = $this->getApplicationVersion();
     }
     $form = FormBuilder::prepareForm($config, $formKey, $version, $ttl, $serialize);
+    // add the botLure to attempt to keep bots from submitting the form.
     $form->addChildren(new BotLure);
     return $form;
   }
