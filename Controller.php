@@ -16,6 +16,7 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Concourse\RoutingUtil,
   Gustavus\Utility\PageUtil,
   Gustavus\FormBuilderMk2\FormBuilder,
+  Gustavus\FormBuilderMk2\FormElement,
   Gustavus\FormBuilderMk2\Util\BotLure,
   InvalidArgumentException;
 
@@ -796,13 +797,14 @@ abstract class Controller
    * @param  callable|array $configuration   Callback used to get the configuration array if needed, or the configuration array itself.
    *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
+   * @param  mixed $ttl Amount of time the form is kept around
    *
    * @throws  InvalidArgumentException If $configuration is not an array or a callable
    * @return FormBuilder
    */
-  protected function buildForm($formKey, $configuration, $callableParameters = null)
+  protected function buildForm($formKey, $configuration, $callableParameters = null, $ttl = null)
   {
-    $form = $this->restoreForm($formKey);
+    $form = $this->restoreForm($formKey, $ttl);
     if ($form === null) {
       // no form to restore. Need to build one.
       if (is_callable($configuration)) {
@@ -818,9 +820,9 @@ abstract class Controller
         }
         $config = $configuration;
       }
-      $form = $this->prepareForm($config, $formKey);
+      $form = $this->prepareForm($config, $formKey, $ttl);
       // restore form in case we have post-data to populate with
-      $form = $this->restoreForm($formKey);
+      $form = $this->restoreForm($formKey, $ttl);
     }
     return $form;
   }
@@ -832,7 +834,7 @@ abstract class Controller
    * @param  string  $formKey  Key of the form
    * @param  mixed   $ttl      Amount of time the form is kept around
    * @param  boolean $serialize Whether to serialize the form before storing it or not
-   * @return  FormBuilder The prepared form
+   * @return  FormElement The prepared form
    */
   protected function prepareForm($config, $formKey = null, $ttl = null, $serialize = false)
   {
@@ -847,10 +849,21 @@ abstract class Controller
    *
    * @param  string $formKey Key of the form to restore
    * @param  mixed  $ttl     Amount of time the form is kept around
-   * @return FormBuilder
+   * @return FormElement
    */
   protected function restoreForm($formKey = null, $ttl = null)
   {
     return FormBuilder::restoreForm($formKey, $ttl);
+  }
+
+  /**
+   * Flushes a form for FormBuilder
+   *
+   * @param  string $formKey Key of the form to flush
+   * @return FormElement
+   */
+  protected function flushForm($formKey = null)
+  {
+    return FormBuilder::flushForm($formKey);
   }
 }
