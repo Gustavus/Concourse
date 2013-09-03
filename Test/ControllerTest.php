@@ -14,7 +14,8 @@ use Gustavus\Test\Test,
   Gustavus\Concourse\Controller,
   Gustavus\Concourse\Test\ControllerTestController,
   Gustavus\Gatekeeper\Gatekeeper,
-  Gustavus\FormBuilderMk2\ElementRenderers\TwigElementRenderer;
+  Gustavus\FormBuilderMk2\ElementRenderers\TwigElementRenderer,
+  Gustavus\FormBuilderMk2\FormBuilder;
 
 /**
  * @package Concourse
@@ -23,12 +24,6 @@ use Gustavus\Test\Test,
  */
 class ControllerTest extends Test
 {
-  /**
-   * Used to hang onto session data from test to test
-   * @var array
-   */
-  private static $sessionData;
-
   /**
    * Base Directory for urls
    */
@@ -651,19 +646,6 @@ class ControllerTest extends Test
 
   /**
    * @test
-   */
-  public function buildForm()
-  {
-    $form = $this->controller->buildForm('testForm', $this->getFormConfiguration());
-    $renderer = new TwigElementRenderer();
-    $rendered = $renderer->render($form);
-    $this->assertContains('Some Random Title', $rendered);
-    $this->assertContains('nodisplay', $rendered);
-    self::$sessionData = $_SESSION;
-  }
-
-  /**
-   * @test
    * @expectedException InvalidArgumentException
    */
   public function buildFormException()
@@ -671,8 +653,20 @@ class ControllerTest extends Test
     $form = $this->controller->buildForm('testForm', 'arst');
     $renderer = new TwigElementRenderer();
     $rendered = $renderer->render($form);
-    // should not get here because an exception should have been thrown.
-    self::$sessionData = $_SESSION;
+    FormBuilder::flushForm('testForm');
+  }
+
+  /**
+   * @test
+   */
+  public function buildForm()
+  {
+    FormBuilder::flushForm('testForm');
+    $form = $this->controller->buildForm('testForm', $this->getFormConfiguration());
+    $renderer = new TwigElementRenderer();
+    $rendered = $renderer->render($form);
+    $this->assertContains('Some Random Title', $rendered);
+    $this->assertContains('nodisplay', $rendered);
   }
 
   /**
@@ -685,7 +679,7 @@ class ControllerTest extends Test
     $rendered = $renderer->render($form);
     $this->assertContains('Some Random Title', $rendered);
     $this->assertContains('nodisplay', $rendered);
-    self::$sessionData = $_SESSION;
+    FormBuilder::flushForm('testForm');
   }
 
   /**
@@ -736,13 +730,14 @@ class ControllerTest extends Test
    */
   public function buildFormAfterAlreadyBuilt()
   {
-    $_SESSION = self::$sessionData;
+    $this->buildForm();
     $form = $this->controller->buildForm('testForm', [$this, 'getFormConfigurationFake']);
     $renderer = new TwigElementRenderer();
     $rendered = $renderer->render($form);
     $this->assertNotContains('A fake form title', $rendered);
     $this->assertContains('Some Random Title', $rendered);
     $this->assertContains('nodisplay', $rendered);
+    FormBuilder::flushForm('testForm');
   }
 
   /**
@@ -755,6 +750,7 @@ class ControllerTest extends Test
     $rendered = $renderer->render($form);
     $this->assertContains('Some Random Text', $rendered);
     $this->assertContains('nodisplay', $rendered);
+    FormBuilder::flushForm('testForm');
   }
 
   /**

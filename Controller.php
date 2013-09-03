@@ -789,16 +789,6 @@ abstract class Controller
   }
 
   /**
-   * Gets the version for the application
-   *
-   * @return string
-   */
-  protected function getApplicationVersion()
-  {
-    return '0.0.0';
-  }
-
-  /**
    * Checks to see if we have a form to restore to return. If not, we prepare
    * Builds a form using FormBuilder and adds BotLure to the form.
    *
@@ -806,17 +796,13 @@ abstract class Controller
    * @param  callable|array $configuration   Callback used to get the configuration array if needed, or the configuration array itself.
    *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
-   * @param  mixed    $version  Version of the form
    *
    * @throws  InvalidArgumentException If $configuration is not an array or a callable
    * @return FormBuilder
    */
-  protected function buildForm($formKey, $configuration, $callableParameters = null, $version = null)
+  protected function buildForm($formKey, $configuration, $callableParameters = null)
   {
-    if ($version === null) {
-      $version = $this->getApplicationVersion();
-    }
-    $form = $this->restoreForm($formKey, $version);
+    $form = $this->restoreForm($formKey);
     if ($form === null) {
       // no form to restore. Need to build one.
       if (is_callable($configuration)) {
@@ -832,9 +818,9 @@ abstract class Controller
         }
         $config = $configuration;
       }
-      $form = $this->prepareForm($config, $formKey, $version);
+      $form = $this->prepareForm($config, $formKey);
       // restore form in case we have post-data to populate with
-      $form = $this->restoreForm($formKey, $version);
+      $form = $this->restoreForm($formKey);
     }
     return $form;
   }
@@ -844,17 +830,13 @@ abstract class Controller
    *
    * @param  array   $config   Configuration array to build a form from
    * @param  string  $formKey  Key of the form
-   * @param  mixed   $version  Version of the form
    * @param  mixed   $ttl      Amount of time the form is kept around
    * @param  boolean $serialize Whether to serialize the form before storing it or not
    * @return  FormBuilder The prepared form
    */
-  protected function prepareForm($config, $formKey = null, $version = null, $ttl = null, $serialize = false)
+  protected function prepareForm($config, $formKey = null, $ttl = null, $serialize = false)
   {
-    if ($version === null) {
-      $version = $this->getApplicationVersion();
-    }
-    $form = FormBuilder::prepareForm($config, $formKey, $version, $ttl, $serialize);
+    $form = FormBuilder::prepareForm($config, $formKey, $ttl, $serialize);
     // add the botLure to attempt to keep bots from submitting the form.
     $form->addChildren(new BotLure);
     return $form;
@@ -864,15 +846,11 @@ abstract class Controller
    * Restores a form from FormBuilder
    *
    * @param  string $formKey Key of the form to restore
-   * @param  mixed  $version Version of the form
    * @param  mixed  $ttl     Amount of time the form is kept around
    * @return FormBuilder
    */
-  protected function restoreForm($formKey = null, $version = null, $ttl = null)
+  protected function restoreForm($formKey = null, $ttl = null)
   {
-    if ($version === null) {
-      $version = $this->getApplicationVersion();
-    }
-    return FormBuilder::restoreForm($formKey, $version, $ttl);
+    return FormBuilder::restoreForm($formKey, $ttl);
   }
 }
