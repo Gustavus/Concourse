@@ -653,7 +653,7 @@ class ControllerTest extends Test
     $form = $this->controller->buildForm('testForm', 'arst');
     $renderer = new TwigElementRenderer();
     $rendered = $renderer->render($form);
-    FormBuilder::flushForm('testForm');
+    $this->controller->flushForm('testForm');
   }
 
   /**
@@ -661,7 +661,7 @@ class ControllerTest extends Test
    */
   public function buildForm()
   {
-    FormBuilder::flushForm('testForm');
+    $this->controller->flushForm('testForm');
     $form = $this->controller->buildForm('testForm', $this->getFormConfiguration());
     $renderer = new TwigElementRenderer();
     $rendered = $renderer->render($form);
@@ -679,7 +679,7 @@ class ControllerTest extends Test
     $rendered = $renderer->render($form);
     $this->assertContains('Some Random Title', $rendered);
     $this->assertContains('nodisplay', $rendered);
-    FormBuilder::flushForm('testForm');
+    $this->controller->flushForm('testForm');
   }
 
   /**
@@ -737,7 +737,7 @@ class ControllerTest extends Test
     $this->assertNotContains('A fake form title', $rendered);
     $this->assertContains('Some Random Title', $rendered);
     $this->assertContains('nodisplay', $rendered);
-    FormBuilder::flushForm('testForm');
+    $this->controller->flushForm('testForm');
   }
 
   /**
@@ -750,7 +750,7 @@ class ControllerTest extends Test
     $rendered = $renderer->render($form);
     $this->assertContains('Some Random Text', $rendered);
     $this->assertContains('nodisplay', $rendered);
-    FormBuilder::flushForm('testForm');
+    $this->controller->flushForm('testForm');
   }
 
   /**
