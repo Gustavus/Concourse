@@ -798,13 +798,14 @@ abstract class Controller
    *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
    * @param  mixed $ttl Amount of time the form is kept around
+   * @param  boolean $refreshTTL  Whether or not to refresh the form's ttl on access
    *
    * @throws  InvalidArgumentException If $configuration is not an array or a callable
    * @return FormBuilder
    */
-  protected function buildForm($formKey, $configuration, $callableParameters = null, $ttl = null)
+  protected function buildForm($formKey, $configuration, $callableParameters = null, $ttl = null, $refreshTTL = true)
   {
-    $form = $this->restoreForm($formKey, $ttl);
+    $form = $this->restoreForm($formKey, $refreshTTL);
     if ($form === null) {
       // no form to restore. Need to build one.
       if (is_callable($configuration)) {
@@ -822,7 +823,7 @@ abstract class Controller
       }
       $form = $this->prepareForm($config, $formKey, $ttl);
       // restore form in case we have post-data to populate with
-      $form = $this->restoreForm($formKey, $ttl);
+      $form = $this->restoreForm($formKey, $refreshTTL);
     }
     return $form;
   }
@@ -847,13 +848,13 @@ abstract class Controller
   /**
    * Restores a form from FormBuilder
    *
-   * @param  string $formKey Key of the form to restore
-   * @param  mixed  $ttl     Amount of time the form is kept around
+   * @param  string  $formKey     Key of the form to restore
+   * @param  boolean $refreshTTL  Whether or not to refresh the form's ttl on access
    * @return FormElement
    */
-  protected function restoreForm($formKey = null, $ttl = null)
+  protected function restoreForm($formKey = null, $refreshTTL = true)
   {
-    return FormBuilder::restoreForm($formKey, $ttl);
+    return FormBuilder::restoreForm($formKey, $refreshTTL);
   }
 
   /**
