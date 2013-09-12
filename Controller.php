@@ -618,16 +618,17 @@ abstract class Controller
    * @param  string $dbName          name of the database in the config file
    * @param  boolean $new            true if we want a new instance.
    * @param  \PDO    $pdo            Optional pre-existing connection to use
+   * @param  string  $charset        Charset to default the connection to
    * @return Doctrine\ORM\EntityManager
    */
-  protected function getEM($applicationPath, $dbName = '', $new = false, $pdo = null)
+  protected function getEM($applicationPath, $dbName = '', $new = false, $pdo = null, $charset = null)
   {
     if ($new) {
-      $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+      $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName, $charset);
       return $this->newEm;
     }
     if (!isset($this->em)) {
-      $this->em = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+      $this->em = EntityManager::getEntityManager($applicationPath, $pdo, $dbName, $charset);
     }
     return $this->em;
   }
@@ -638,12 +639,13 @@ abstract class Controller
    * @param  string $applicationPath full path to the application
    * @param  string $dbName          name of the database in the config file
    * @param  \PDO    $pdo            Optional pre-existing connection to use
+   * @param  string  $charset        Charset to default the connection to
    * @return Doctrine\ORM\EntityManager
    */
-  protected function getNewEM($applicationPath = '', $dbName = '', $pdo = null)
+  protected function getNewEM($applicationPath = '', $dbName = '', $pdo = null, $charset = null)
   {
     if (!isset($this->newEm)) {
-      $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName);
+      $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName, $charset);
     }
     return $this->newEm;
   }
