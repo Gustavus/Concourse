@@ -11,6 +11,7 @@ require_once 'gatekeeper/gatekeeper.class.php';
 use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Gatekeeper\Gatekeeper,
   Gustavus\Doctrine\EntityManager,
+  Gustavus\Doctrine\DBAL,
   Gustavus\TwigFactory\TwigFactory,
   Campus\Pull\People,
   Gustavus\Concourse\RoutingUtil,
@@ -88,6 +89,13 @@ abstract class Controller
    * @var Doctrine\ORM\EntityManager
    */
   private $newEm;
+
+  /**
+   * DBAL connection
+   *
+   * @var Doctrine\DBAL\Connection
+   */
+  private $dbal;
 
   /**
    * The Twig Environment
@@ -648,6 +656,22 @@ abstract class Controller
       $this->newEm = EntityManager::getEntityManager($applicationPath, $pdo, $dbName, $charset);
     }
     return $this->newEm;
+  }
+
+  /**
+   * Sets up and returns a DBAL instance
+   *
+   * @param  string $projectName Name of the project to get the db connection for
+   * @param  \PDO   $pdo         Optional pre-existing connection to use
+   * @param  string $charset     Charset to default the connection to
+   * @return Doctrine\DBAL\Connection
+   */
+  protected function getDBAL($projectName, $pdo = null, $charset = null)
+  {
+    if (!isset($this->dbal)) {
+      $this->dbal = DBAL::getDBAL($projectName, $pdo, $charset);
+    }
+    return $this->dbal;
   }
 
   /**

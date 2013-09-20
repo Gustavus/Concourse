@@ -265,6 +265,15 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function getDBAL()
+  {
+    $dbal = $this->controller->getDBAL('menu');
+    $this->assertInstanceOf('Doctrine\DBAL\Connection', $dbal);
+  }
+
+  /**
+   * @test
+   */
   public function getMethod()
   {
     // will never be set from cli
