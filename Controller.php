@@ -501,7 +501,8 @@ abstract class Controller
   private function setUpTwig($viewDir)
   {
     if (!isset($this->twig)) {
-      $this->twig = TwigFactory::getTwigFilesystem($viewDir);
+      // we don't want TwigFactory to cache things since we are doing our own caching.
+      $this->twig = TwigFactory::getTwigFilesystem($viewDir, false);
       // check to see if we need to add the extension
       $extension = new ConcourseTwigExtension($this);
       if (!$this->twig->hasExtension($extension->getName())) {
