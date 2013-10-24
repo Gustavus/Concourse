@@ -19,7 +19,8 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\FormBuilderMk2\FormBuilder,
   Gustavus\FormBuilderMk2\FormElement,
   Gustavus\FormBuilderMk2\Util\BotLure,
-  InvalidArgumentException;
+  InvalidArgumentException,
+  UnexpectedValueException;
 
 /**
  * Shared controller for all Concourse applications
@@ -449,18 +450,31 @@ abstract class Controller
    *
    * @param  string|array $view  path to the template view or associative array with key being the namespace, and the path to the template view as the value.
    * @param  array  $parameters parameters to pass to the view
+   * @param  boolean  $modifyEnvironment Whether to make sure the view directory is in the environment or not. Passes view on untouched if false.
    * @return string
    */
-  protected function renderView($view, array $parameters = array())
+  protected function renderView($view, array $parameters = array(), $modifyEnvironment = true)
   {
     if (is_array($view)) {
       $namespace = key($view);
-      $viewDir = dirname($view[$namespace]);
-      $view = sprintf('@%s/%s', $namespace, basename($view[$namespace]));
+      if ($modifyEnvironment) {
+        // we want to make sure the view directory is in the current environment
+        $viewDir = dirname($view[$namespace]);
+        $viewFile = basename($view[$namespace]);
+      } else {
+        $viewDir = null;
+        $viewFile = $view[$namespace];
+      }
+      $view = sprintf('@%s/%s', $namespace, $viewFile);
     } else {
       $namespace = null;
-      $viewDir = dirname($view);
-      $view    = basename($view);
+      if ($modifyEnvironment) {
+        // we want to make sure the view directory is in the current environment
+        $viewDir = dirname($view);
+        $view    = basename($view);
+      } else {
+        $viewDir = null;
+      }
     }
     return $this->getTwigEnvironment($viewDir, $namespace)->render($view, $parameters);
   }
@@ -470,11 +484,17 @@ abstract class Controller
    *
    * @param  string $viewDir  Path to the view directory
    * @param  string $viewNamespace Namespace of the view
+   *
+   * @throws  UnexpectedValueException If a view directory is not specified and $this->twig doesn't exist.
    * @return \Twig_Environment
    */
-  protected function getTwigEnvironment($viewDir, $viewNamespace = null)
+  protected function getTwigEnvironment($viewDir = null, $viewNamespace = null)
   {
-    $this->setUpTwig($viewDir, $viewNamespace);
+    if (!empty($viewDir)) {
+      $this->setUpTwig($viewDir, $viewNamespace);
+    } else if (empty($this->twig)) {
+      throw new UnexpectedValueException('Twig does not exist and needs a view directory specified to be built.');
+    }
 
     return $this->twig;
   }

@@ -18,6 +18,8 @@ use Gustavus\Test\Test,
   Gustavus\FormBuilderMk2\FormBuilder;
 
 /**
+ * Tests for Controller
+ *
  * @package Concourse
  * @subpackage Test
  * @author  Billy Visto
@@ -445,6 +447,30 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function renderViewNoEnvChange()
+  {
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse/');
+    $view = '/Test/testView.html.twig';
+
+    $actual = $this->controller->renderView($view, ['testParam' => 'TestingTemplate'], false);
+    $this->assertContains('TestingTemplate', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function renderViewNoEnvChangeWithNamespace()
+  {
+    $this->controller->addTwigLoaderPath('/cis/lib/Gustavus/Concourse/', 'concourse');
+    $view = '@concourse/Test/testView.html.twig';
+
+    $actual = $this->controller->renderView($view, ['testParam' => 'TestingTemplate'], false);
+    $this->assertContains('TestingTemplate', $actual);
+  }
+
+  /**
+   * @test
+   */
   public function setUpTwig()
   {
     $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
@@ -502,6 +528,27 @@ class ControllerTest extends Test
     $this->assertSame($paths, $namePaths);
 
     $this->assertInstanceOf('Twig_Environment', $env);
+  }
+
+  /**
+   * @test
+   */
+  public function getTwigEnvironmentAlreadyExistent()
+  {
+    $origEnv = $this->controller->getTwigEnvironment('/cis/lib/Gustavus/Concourse/Test');
+    $newEnv  = $this->controller->getTwigEnvironment();
+
+    $this->assertInstanceOf('Twig_Environment', $newEnv);
+    $this->assertSame($origEnv, $newEnv);
+  }
+
+  /**
+   * @test
+   * @expectedException UnexpectedValueException
+   */
+  public function getTwigEnvironmentNotExistent()
+  {
+    $this->controller->getTwigEnvironment();
   }
 
   /**
