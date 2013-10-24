@@ -1,9 +1,21 @@
 <?php
+/**
+ * @package  Concourse
+ * @subpackage  Test
+ * @author  Billy Visto
+ */
 
 namespace Gustavus\Concourse\Test;
 
 use Gustavus\Concourse\Controller;
 
+/**
+ * TestController for overloading calls
+ *
+ * @package  Concourse
+ * @subpackage  Test
+ * @author  Billy Visto
+ */
 class ControllerTestController extends Controller
 {
   /**

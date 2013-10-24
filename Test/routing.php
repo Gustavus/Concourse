@@ -1,4 +1,12 @@
 <?php
+/**
+ * Routing file for testing
+ *
+ * @package Concourse
+ * @subpackage Test
+ * @author  Billy Visto
+ */
+
 return [
   'index' => [
       'route' => '/',

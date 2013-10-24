@@ -10,6 +10,13 @@ namespace Gustavus\Concourse\Test;
 use OutOfBoundsException,
   Gustavus\Concourse\Router;
 
+/**
+ * Utility for testing RoutingUtil
+ *
+ * @package Concourse
+ * @subpackage Test
+ * @author  Billy Visto
+ */
 class RouterTestUtil extends Router
 {
   /**
@@ -24,7 +31,7 @@ class RouterTestUtil extends Router
    * @throws  OutOfBoundsException If the handler cannot be found in the forwardingTestClassMapping
    * @return mixed
    */
-  public static function forward($routeConfig, $alias = '/', array $parameters, $forwardingTestClassMapping)
+  public static function forward($routeConfig, $alias = '/', array $parameters = array(), $forwardingTestClassMapping = array())
   {
     if (!is_array($routeConfig)) {
       $routeConfig = include($routeConfig);
