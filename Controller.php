@@ -447,24 +447,34 @@ abstract class Controller
   /**
    * Renders a twig template specified in $view
    *
-   * @param  string $view       path to the template view
+   * @param  string|array $view  path to the template view or associative array with key being the namespace, and the path to the template view as the value.
    * @param  array  $parameters parameters to pass to the view
    * @return string
    */
   protected function renderView($view, array $parameters = array())
   {
-    return $this->getTwigEnvironment(dirname($view))->render(basename($view), $parameters);
+    if (is_array($view)) {
+      $namespace = key($view);
+      $viewDir = dirname($view[$namespace]);
+      $view = sprintf('@%s/%s', $namespace, basename($view[$namespace]));
+    } else {
+      $namespace = null;
+      $viewDir = dirname($view);
+      $view    = basename($view);
+    }
+    return $this->getTwigEnvironment($viewDir, $namespace)->render($view, $parameters);
   }
 
   /**
    * Gets the twig environment set up with renderView
    *
    * @param  string $viewDir  Path to the view directory
+   * @param  string $viewNamespace Namespace of the view
    * @return \Twig_Environment
    */
-  protected function getTwigEnvironment($viewDir)
+  protected function getTwigEnvironment($viewDir, $viewNamespace = null)
   {
-    $this->setUpTwig($viewDir);
+    $this->setUpTwig($viewDir, $viewNamespace);
 
     return $this->twig;
   }
@@ -473,11 +483,12 @@ abstract class Controller
    * Adds a path to TwigEnvironment's loader
    *
    * @param string $path Path to add
+   * @param  string $pathNamespace Namespace of the view path
    * @return  void
    */
-  protected function addTwigLoaderPath($path)
+  protected function addTwigLoaderPath($path, $pathNamespace = null)
   {
-    $this->setUpTwig($path);
+    $this->setUpTwig($path, $pathNamespace);
   }
 
   /**
@@ -496,9 +507,10 @@ abstract class Controller
    * Sets up the Twig environment with $viewDir in the loader paths
    *
    * @param string $viewDir path to the twig templates directory
+   * @param  string $viewNamespace Namespace of the view
    * @return  void
    */
-  private function setUpTwig($viewDir)
+  private function setUpTwig($viewDir, $viewNamespace = null)
   {
     if (!isset($this->twig)) {
       // we don't want TwigFactory to cache things since we are doing our own caching.
@@ -511,8 +523,16 @@ abstract class Controller
       }
     }
     // make sure the specified path is in the loader
-    if (!in_array($viewDir, $this->twig->getLoader()->getPaths())) {
-      $this->twig->getLoader()->addPath($viewDir);
+    if (!empty($viewNamespace)) {
+      // we want to make sure this namespace isn't included already.
+      if (!in_array($viewDir, $this->twig->getLoader()->getPaths($viewNamespace))) {
+        $this->twig->getLoader()->addPath($viewDir, $viewNamespace);
+      }
+    } else {
+      // we are working with Twig's main namespace, and can't just pass null on
+      if (!in_array($viewDir, $this->twig->getLoader()->getPaths())) {
+        $this->twig->getLoader()->addPath($viewDir);
+      }
     }
   }
 

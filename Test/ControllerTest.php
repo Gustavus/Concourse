@@ -435,9 +435,32 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function renderNamespaceView()
+  {
+    $view = ['admin' => '/cis/lib/Gustavus/Concourse/Test/testView.html.twig'];
+    $actual = $this->controller->renderView($view, ['testParam' => 'TestingTemplate']);
+    $this->assertContains('TestingTemplate', $actual);
+  }
+
+  /**
+   * @test
+   */
   public function setUpTwig()
   {
     $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test');
+    $this->assertInstanceOf('Twig_Environment', $this->controller->twig);
+  }
+
+  /**
+   * @test
+   */
+  public function setUpTwigWithNamespace()
+  {
+    $this->controller->setUpTwig('/cis/lib/Gustavus/Concourse/Test', 'admin');
+
+    $paths = $this->controller->twig->getLoader()->getPaths();
+    $namePaths = $this->controller->twig->getLoader()->getPaths('admin');
+    $this->assertSame($paths, $namePaths);
     $this->assertInstanceOf('Twig_Environment', $this->controller->twig);
   }
 
@@ -464,6 +487,20 @@ class ControllerTest extends Test
   public function getTwigEnvironment()
   {
     $env = $this->controller->getTwigEnvironment('/cis/lib/Gustavus/Concourse/Test');
+    $this->assertInstanceOf('Twig_Environment', $env);
+  }
+
+  /**
+   * @test
+   */
+  public function getTwigEnvironmentWithNamespace()
+  {
+    $env = $this->controller->getTwigEnvironment('/cis/lib/Gustavus/Concourse/Test', 'admin');
+
+    $paths = $env->getLoader()->getPaths();
+    $namePaths = $env->getLoader()->getPaths('admin');
+    $this->assertSame($paths, $namePaths);
+
     $this->assertInstanceOf('Twig_Environment', $env);
   }
 
