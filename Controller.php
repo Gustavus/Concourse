@@ -19,6 +19,7 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\FormBuilderMk2\FormBuilder,
   Gustavus\FormBuilderMk2\FormElement,
   Gustavus\FormBuilderMk2\Util\BotLure,
+  Gustavus\Extensibility\Filters,
   InvalidArgumentException,
   UnexpectedValueException;
 
@@ -533,14 +534,18 @@ abstract class Controller
   private function setUpTwig($viewDir, $viewNamespace = null)
   {
     if (!isset($this->twig)) {
+      $controller = $this;
+      Filters::add('twigEnvironmentSetUp', function($twigEnv) use ($controller) {
+        // check to see if we need to add the extension
+        $extension = new ConcourseTwigExtension($controller);
+        if (!$twigEnv->hasExtension($extension->getName())) {
+          // add concourse extension
+          $twigEnv->addExtension($extension);
+        }
+        return $twigEnv;
+      });
       // we don't want TwigFactory to cache things since we are doing our own caching.
       $this->twig = TwigFactory::getTwigFilesystem($viewDir, false);
-      // check to see if we need to add the extension
-      $extension = new ConcourseTwigExtension($this);
-      if (!$this->twig->hasExtension($extension->getName())) {
-        // add concourse extension
-        $this->twig->addExtension($extension);
-      }
     }
     // make sure the specified path is in the loader
     if (!empty($viewNamespace)) {
