@@ -534,10 +534,9 @@ abstract class Controller
   private function setUpTwig($viewDir, $viewNamespace = null)
   {
     if (!isset($this->twig)) {
-      $controller = $this;
-      Filters::add('twigEnvironmentSetUp', function($twigEnv) use ($controller) {
+      Filters::add('twigEnvironmentSetUp', function($twigEnv) {
         // check to see if we need to add the extension
-        $extension = new ConcourseTwigExtension($controller);
+        $extension = new ConcourseTwigExtension($this);
         if (!$twigEnv->hasExtension($extension->getName())) {
           // add concourse extension
           $twigEnv->addExtension($extension);
