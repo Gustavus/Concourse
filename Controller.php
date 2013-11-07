@@ -232,6 +232,18 @@ abstract class Controller
   }
 
   /**
+   * Sets the focus box HTML on the page.
+   *
+   * @param string $focusBox the new page focusbox content.
+   * @return $this
+   */
+  protected function addFocusBox($focusBox)
+  {
+    $this->focusBox .= $focusBox;
+    return $this;
+  }
+
+  /**
    * Gets the stylesheets HTML on the page.
    *
    * @return string the stylesheets HTML on the page

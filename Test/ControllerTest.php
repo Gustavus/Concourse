@@ -113,6 +113,15 @@ class ControllerTest extends Test
   /**
    * @test
    */
+  public function addFocusBox()
+  {
+    $this->controller->addFocusBox('Testing add');
+    $this->assertSame($this->controllerProperties['focusBox'] . 'Testing add', $this->controller->getFocusBox());
+  }
+
+  /**
+   * @test
+   */
   public function getStylesheets()
   {
     $this->assertSame($this->controllerProperties['stylesheets'], $this->controller->getStylesheets());
