@@ -119,7 +119,7 @@ class RouterTest extends Test
   }
 
   /**
-   * @test
+   * test
    */
   public function handleRequestNotFound()
   {
