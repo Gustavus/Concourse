@@ -42,6 +42,18 @@ class RouterTest extends Test
   ];
 
   /**
+   * Override tokens
+   * @var array
+   */
+  private $overrides = array();
+
+  /**
+   * Place to store headers we are trying to set
+   * @var array
+   */
+  public $headers = array();
+
+  /**
    * Sets up the object for every test
    */
   public function setUp()
@@ -53,7 +65,22 @@ class RouterTest extends Test
    */
   public function tearDown()
   {
+    unset($this->overrides);
   }
+
+  /**
+   * Sets up overriding header()
+   *
+   * @return void
+   */
+  private function overrideHeader()
+  {
+    $self = $this;
+    $this->overrides['header'] = override_function('header', function ($header) use (&$self) {
+      $self->headers[] = $header;
+    });
+  }
+
 
   /**
    * @test
@@ -96,8 +123,14 @@ class RouterTest extends Test
    */
   public function handleRequestNotFound()
   {
-    //$actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/25');
-    // exception expected. nothing else happens here
+    $_SERVER['SERVER_NAME'] = 'testing';
+    $_SERVER['REQUEST_URI'] = 'testing';
+    $_SERVER['REMOTE_ADDR'] = 'testing';
+    $this->overrideHeader();
+    $actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/25/arst');
+    $this->assertNotEmpty($actual);
+    $this->assertContains('404', $actual);
+    ob_start();
   }
 
   /**

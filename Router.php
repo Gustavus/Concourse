@@ -6,10 +6,10 @@
 
 namespace Gustavus\Concourse;
 
-// we want the template to start when we require it.
-// This will set up debugging and extreme maintenance.
+// we don't want the template to start when we require it.
+// This will still set up debugging and extreme maintenance.
 if (!defined('GUSTAVUS_START_TEMPLATE')) {
-  define('GUSTAVUS_START_TEMPLATE', true);
+  define('GUSTAVUS_START_TEMPLATE', false);
 }
 
 require_once 'template/request.class.php';
@@ -118,7 +118,6 @@ class Router
     header($header);
     ob_start();
 
-    //$_SERVER['REDIRECT_STATUS'] = 404;
     $_SERVER['REDIRECT_URL']    = false;
     include '/cis/www/errorPages/error.php';
 
