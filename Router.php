@@ -12,10 +12,12 @@ if (!defined('GUSTAVUS_START_TEMPLATE')) {
   define('GUSTAVUS_START_TEMPLATE', false);
 }
 
+require_once 'template/PageActions.php';
 require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
-use Gustavus\Gatekeeper\Gatekeeper;
+use Gustavus\Gatekeeper\Gatekeeper,
+  Template\PageActions;
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -80,6 +82,9 @@ class Router
    */
   public static function handleRequest($routingConfig, $route)
   {
+    // Handle users logging in/out and requesting impersonation.
+    PageActions::handleActions();
+
     if (!is_array($routingConfig)) {
       $routingConfig = include($routingConfig);
     }
@@ -101,7 +106,7 @@ class Router
    * Handles what to do if the route cannot be found.
    *   It will show the errorPage with either of status of 404 normally, or 400 if a regex failed.
    *
-   * @return void
+   * @return string Contents of the output buffer
    */
   private static function handleRouteNotFound()
   {
@@ -121,8 +126,7 @@ class Router
     $_SERVER['REDIRECT_URL']    = false;
     include '/cis/www/errorPages/error.php';
 
-    ob_end_flush();
-    exit;
+    return ob_get_clean();
   }
 
   /**
@@ -131,20 +135,21 @@ class Router
    * @param  string $alias the alias we are running the handler for
    * @param  array  $routeConfig
    * @param  array  $args  arguments to pass onto the controller
-   * @return string false if user can't access page. String otherwise
+   * @return string
    */
   protected static function runHandler($alias, array $routeConfig, array $args = array())
   {
     if (!Router::userCanAccessPage($routeConfig)) {
+      // we don't want the auxbox to be displayed
+      $GLOBALS['templatePreferences']['auxBox'] = false;
       header('HTTP/1.0 403 Forbidden');
       ob_start();
 
       $_SERVER['REDIRECT_STATUS'] = 403;
-      $_SERVER['REDIRECT_URL'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'https://gustavus.edu';
-      include_once('/cis/www/errorPages/error.php');
+      $_SERVER['REDIRECT_URL'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_SERVER['SCRIPT_NAME'];
+      include '/cis/www/errorPages/error.php';
 
-      ob_end_flush();
-      exit;
+      return ob_get_clean();
     }
 
     $handler = explode(':', $routeConfig['handler']);

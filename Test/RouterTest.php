@@ -81,7 +81,6 @@ class RouterTest extends Test
     });
   }
 
-
   /**
    * @test
    */
@@ -119,7 +118,7 @@ class RouterTest extends Test
   }
 
   /**
-   * test
+   * @test
    */
   public function handleRequestNotFound()
   {
@@ -128,9 +127,28 @@ class RouterTest extends Test
     $_SERVER['REMOTE_ADDR'] = 'testing';
     $this->overrideHeader();
     $actual = Router::handleRequest($this->routingConfig, '/indexTwo/23/25/arst');
+
     $this->assertNotEmpty($actual);
     $this->assertContains('404', $actual);
-    ob_start();
+    $this->set('\Template', 'template', null);
+  }
+
+  /**
+   * @test
+   */
+  public function handleRequestNotAllowed()
+  {
+    $_SERVER['SERVER_NAME'] = 'testing';
+    $_SERVER['REQUEST_URI'] = 'testing';
+    $_SERVER['REMOTE_ADDR'] = '2620:46:8000:64:7254:d2ff:feab:17cb';//'testing';
+    $this->overrideHeader();
+    $this->routingConfig['indexTwo']['visibleTo'] = ['concourse', 'admin'];
+
+    $actual = Router::handleRequest($this->routingConfig, '/indexTwo/23');
+
+    $this->assertNotEmpty($actual);
+    $this->assertContains('Access Denied', $actual);
+    $this->set('\Template', 'template', null);
   }
 
   /**
