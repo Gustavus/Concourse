@@ -974,6 +974,10 @@ abstract class Controller
    * @param  array   $config   Configuration array to build a form from
    * @param  string  $formKey  Key of the form
    * @param  mixed   $ttl      Amount of time the form is kept around
+   *
+   * @throws InvalidArgumentException
+   *  if $config is not an array nor a FormElement instance.
+   *
    * @return  FormElement The prepared form
    */
   protected function prepareForm($config, $formKey = null, $ttl = null)
@@ -1000,6 +1004,7 @@ abstract class Controller
       }
     } else {
       // Uh oh...?
+      throw new InvalidArgumentException('$config must be an array or a FormElement instance.');
     }
 
     return $form;
