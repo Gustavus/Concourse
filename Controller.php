@@ -111,6 +111,8 @@ abstract class Controller
 
   /**
    * The alias of the found route we are using
+   *
+   * @var string
    */
   private $routeAlias;
 
