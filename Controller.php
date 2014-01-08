@@ -16,8 +16,11 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Campus\Pull\People,
   Gustavus\Concourse\RoutingUtil,
   Gustavus\Utility\PageUtil,
-  Gustavus\FormBuilderMk2\FormBuilder,
   Gustavus\FormBuilderMk2\FormElement,
+  Gustavus\FormBuilderMk2\Persistors\ElementPersistor,
+  Gustavus\FormBuilderMk2\Persistors\KeyGenerators\UserKeyGenerator,
+  Gustavus\FormBuilderMk2\Populators\LegacyElementPopulator,
+  Gustavus\FormBuilderMk2\Messaging\StandardMessagingServerFactory,
   Gustavus\FormBuilderMk2\Util\BotLure,
   Gustavus\Extensibility\Filters,
   InvalidArgumentException,
@@ -110,6 +113,15 @@ abstract class Controller
    * The alias of the found route we are using
    */
   private $routeAlias;
+
+  /**
+   * A collection of persistors that have been used to prepare or restore forms. Stored to allow
+   * controllers to work with the form data before it is stored.
+   *
+   * @var array
+   */
+  private $persistors;
+
 
   /**
    * Constructs the object.
@@ -881,14 +893,13 @@ abstract class Controller
    *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
    * @param  mixed $ttl Amount of time the form is kept around
-   * @param  boolean $refreshTTL  Whether or not to refresh the form's ttl on access
    *
    * @throws  InvalidArgumentException If $configuration is not an array or a callable
    * @return FormBuilder
    */
-  protected function buildForm($formKey, $configuration, $callableParameters = null, $ttl = null, $refreshTTL = true)
+  protected function buildForm($formKey, $configuration, $callableParameters = null, $ttl = null)
   {
-    $form = $this->restoreForm($formKey, $refreshTTL);
+    $form = $this->restoreForm($formKey);
     if ($form === null) {
       // no form to restore. Need to build one.
       if (is_callable($configuration)) {
@@ -906,25 +917,91 @@ abstract class Controller
       }
       $form = $this->prepareForm($config, $formKey, $ttl);
       // restore form in case we have post-data to populate with
-      $form = $this->restoreForm($formKey, $refreshTTL);
+      $form = $this->restoreForm($formKey);
     }
     return $form;
   }
 
   /**
-   * Prepares a form using FormBuilder and adds ButLure to it
+   * Retrieves a persistor to retrieve persistent data for the specified key. The key will be
+   * associated either with the currently active user or the current session.
+   *
+   * @param string $key
+   *  The key to use for retrieving persistent data.
+   *
+   * @return ElementPersistor
+   *  An ElementPersistor using the specified key for retrieving and storing data.
+   */
+  protected function getElementPersistor($key)
+  {
+    if (!isset($this->persistors[$key])) {
+      if (!isset($this->persistors)) {
+        $this->persistors = [];
+      }
+
+      $this->persistors[$key] = new ElementPersistor(new UserKeyGenerator($key));
+    }
+
+    return $this->persistors[$key];
+  }
+
+  /**
+   * Retrieves the factory to use for building new MessagingServer instances for ElementPersistors
+   * which do not already have one.
+   *
+   * @return MessagingServerFactory
+   *  The MessagingServerFactory to use for building new MessagingServer instances.
+   */
+  protected function getMessagingServerFactory()
+  {
+    return new StandardMessagingServerFactory();
+  }
+
+  /**
+   * Retrieves the populator to be used for populating restored forms.
+   *
+   * @return ElementPopulator
+   *  The populator to be used for populating forms retrieved by the restoreForm method.
+   */
+  protected function getElementPopulator()
+  {
+    return new LegacyElementPopulator();
+  }
+
+  /**
+   * Prepares a form using FormBuilder and adds BotLure to it
    *
    * @param  array   $config   Configuration array to build a form from
    * @param  string  $formKey  Key of the form
    * @param  mixed   $ttl      Amount of time the form is kept around
-   * @param  boolean $serialize Whether to serialize the form before storing it or not
    * @return  FormElement The prepared form
    */
-  protected function prepareForm($config, $formKey = null, $ttl = null, $serialize = false)
+  protected function prepareForm($config, $formKey = null, $ttl = null)
   {
-    $form = FormBuilder::prepareForm($config, $formKey, $ttl, $serialize);
-    // add the botLure to attempt to keep bots from submitting the form.
-    $form->addChildren(new BotLure);
+    $persistor = $this->getElementPersistor($formKey);
+    $form = is_array($config) ? FormElement::buildElement($config) : $config;
+
+    if ($form instanceof FormElement) {
+      // Add the BotLure to attempt to keep bots from submitting the form.
+      $form->addChildren(new BotLure());
+
+      // Add the form's key (legacy stuff).
+      $form->setAttribute('fbkey', $persistor->getKey());
+
+      // Configure persistor.
+      $persistor->setElement($form);
+
+      if (!$persistor->hasPersistentData()) {
+        $persistor->setMessagingServer($this->getMessagingServerFactory()->buildMessagingServer());
+      }
+
+      if (isset($ttl)) {
+        $persistor->setTTL($ttl);
+      }
+    } else {
+      // Uh oh...?
+    }
+
     return $form;
   }
 
@@ -932,12 +1009,13 @@ abstract class Controller
    * Restores a form from FormBuilder
    *
    * @param  string  $formKey     Key of the form to restore
-   * @param  boolean $refreshTTL  Whether or not to refresh the form's ttl on access
    * @return FormElement
    */
-  protected function restoreForm($formKey = null, $refreshTTL = true)
+  protected function restoreForm($formKey = null)
   {
-    return FormBuilder::restoreForm($formKey, $refreshTTL);
+    $persistor = $this->getElementPersistor($formKey);
+
+    return $persistor->getElement($this->getElementPopulator());
   }
 
   /**
@@ -948,6 +1026,8 @@ abstract class Controller
    */
   protected function flushForm($formKey = null)
   {
-    return FormBuilder::flushForm($formKey);
+    $persistor = $this->getElementPersistor($formKey);
+
+    return $persistor->clear();
   }
 }

@@ -12,7 +12,6 @@ if (!defined('GUSTAVUS_START_TEMPLATE')) {
   define('GUSTAVUS_START_TEMPLATE', false);
 }
 
-require_once 'template/PageActions.php';
 require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
