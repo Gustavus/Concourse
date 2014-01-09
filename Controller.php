@@ -1022,7 +1022,7 @@ abstract class Controller
   {
     $persistor = $this->getElementPersistor($formKey);
 
-    return $persistor->getElement($this->getElementPopulator());
+    return !$persistor->hasExpired() ? $persistor->getElement($this->getElementPopulator()) : null;
   }
 
   /**
@@ -1035,6 +1035,11 @@ abstract class Controller
   {
     $persistor = $this->getElementPersistor($formKey);
 
-    return $persistor->clear();
+    $element = !$persistor->hasExpired() ? $persistor->getElement() : null;
+
+    $persistor->clear();
+    $persistor->close();
+
+    return $element;
   }
 }
