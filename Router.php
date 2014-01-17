@@ -94,7 +94,7 @@ class Router
 
     if (($foundRoute = Router::findRoute($routingConfig, $route)) !== false) {
       // could potentially be a more advanced route
-      return Router::runHandler(key($foundRoute), $routingConfig[key($foundRoute)], current($foundRoute), key($foundRoute));
+      return Router::runHandler(key($foundRoute), $routingConfig[key($foundRoute)], current($foundRoute));
     } else {
       // route not found
       return Router::handleRouteNotFound();
