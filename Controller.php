@@ -23,6 +23,7 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\FormBuilderMk2\Messaging\StandardMessagingServerFactory,
   Gustavus\FormBuilderMk2\Util\BotLure,
   Gustavus\Extensibility\Filters,
+  Gustavus\GACCache\GlobalCache,
   InvalidArgumentException,
   UnexpectedValueException;
 
@@ -124,6 +125,12 @@ abstract class Controller
    */
   private $persistors;
 
+  /**
+   * cache data store
+   *
+   * @var \Gustavus\GACCache\CacheDataStore
+   */
+  protected static $cacheDataStore;
 
   /**
    * Constructs the object.
@@ -1041,5 +1048,18 @@ abstract class Controller
     $persistor->close();
 
     return $element;
+  }
+
+  /**
+   * Gets the cache data store for applications to interact with
+   *
+   * @return \Gustavus\GACCache\CacheDataStore
+   */
+  protected function getCache()
+  {
+    if (!isset(static::$cacheDataStore)) {
+      static::$cacheDataStore = GlobalCache::buildDataStore();
+    }
+    return static::$cacheDataStore;
   }
 }

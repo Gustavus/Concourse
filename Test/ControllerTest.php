@@ -876,4 +876,12 @@ class ControllerTest extends Test
     ];
     return $config;
   }
+
+  /**
+   * @test
+   */
+  public function getCache()
+  {
+    $this->assertInstanceOf('\Gustavus\GACCache\CacheDataStore', $this->controller->getCache());
+  }
 }
