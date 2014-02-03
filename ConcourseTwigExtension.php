@@ -7,7 +7,7 @@
 namespace Gustavus\Concourse;
 
 use Twig_Extension,
-  Twig_Function_Method;
+  Twig_SimpleFunction;
 
 /**
  * Twig Extension for Concourse
@@ -53,7 +53,7 @@ class ConcourseTwigExtension extends Twig_Extension
   public function getFunctions()
   {
     return array(
-      'buildUrl'    => new Twig_Function_Method($this, 'buildUrl'),
+      new Twig_SimpleFunction('buildUrl', [$this, 'buildUrl']),
     );
   }
 
