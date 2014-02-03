@@ -126,13 +126,6 @@ abstract class Controller
   private $persistors;
 
   /**
-   * cache data store
-   *
-   * @var \Gustavus\GACCache\CacheDataStore
-   */
-  protected static $cacheDataStore;
-
-  /**
    * Constructs the object.
    *
    * @param string $routeAlias The alias of the current route we are using
@@ -943,6 +936,11 @@ abstract class Controller
    */
   protected function getElementPersistor($key)
   {
+    if (empty($key)) {
+      // We can use an integer key to represent the "global" key.
+      $key = 0;
+    }
+
     if (!isset($this->persistors[$key])) {
       if (!isset($this->persistors)) {
         $this->persistors = [];
@@ -992,6 +990,7 @@ abstract class Controller
   protected function prepareForm($config, $formKey = null, $ttl = null)
   {
     $persistor = $this->getElementPersistor($formKey);
+
     $form = is_array($config) ? FormElement::buildElement($config) : $config;
 
     if ($form instanceof FormElement) {
@@ -1057,9 +1056,6 @@ abstract class Controller
    */
   protected function getCache()
   {
-    if (!isset(static::$cacheDataStore)) {
-      static::$cacheDataStore = GlobalCache::buildDataStore();
-    }
-    return static::$cacheDataStore;
+    return GlobalCache::getGlobalDataStore();
   }
 }
