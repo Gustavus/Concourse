@@ -16,7 +16,8 @@ require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
 use Gustavus\Gatekeeper\Gatekeeper,
-  Template\PageActions;
+  Template\PageActions,
+  Gustavus\Utility\File;
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -129,7 +130,8 @@ class Router
   }
 
   /**
-   * Runs the handler set in $routeConfig
+   * Runs the handler set in $routeConfig.
+   *   It tries to serve the file specified in $routeConfig['route'] if no handler is specified.
    *
    * @param  string $alias the alias we are running the handler for
    * @param  array  $routeConfig
@@ -149,6 +151,17 @@ class Router
       include '/cis/www/errorPages/error.php';
 
       return ob_get_clean();
+    }
+
+    if (!isset($routeConfig['handler'])) {
+      // let's try to out put the
+      if (strpos($routeConfig['route'], '/') === 0) {
+        $route = substr($routeConfig['route'], 1);
+      } else {
+        $route = $routeConfig['route'];
+      }
+      (new File($route))->serve();
+      exit;
     }
 
     $handler = explode(':', $routeConfig['handler']);
