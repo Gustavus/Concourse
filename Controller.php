@@ -22,6 +22,8 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\FormBuilderMk2\Populators\LegacyElementPopulator,
   Gustavus\FormBuilderMk2\Messaging\StandardMessagingServerFactory,
   Gustavus\FormBuilderMk2\Util\BotLure,
+  Gustavus\FormBuilderMK2\ElementRenderers\ElementRenderer,
+  Gustavus\Resources\Resource,
   Gustavus\Extensibility\Filters,
   Gustavus\GACCache\GlobalCache,
   InvalidArgumentException,
@@ -922,6 +924,44 @@ abstract class Controller
       $form = $this->restoreForm($formKey);
     }
     return $form;
+  }
+
+  /**
+   * Adds CSS and JS for FormBuilder
+   *
+   * @param  ElementRenderer $renderer Renderer to get the resources for
+   * @param  array $extraCSSResources Extra css resources to include
+   * @param  array $extraJSResources Whether to include the student orgs js as well
+   * @return  void
+   */
+  protected function addFormResources(ElementRenderer $renderer, array $extraCSSResources = null, array $extraJSResources = null)
+  {
+    $resources = $renderer->getExternalResources();
+    $styles = (isset($resources['css'])) ? $resources['css'] : [];
+    $js     = (isset($resources['js'])) ? $resources['js'] : [];
+    if (!empty($extraCSSResources)) {
+      $styles = array_merge($styles, $extraCSSResources);
+    }
+
+    if (!empty($styles)) {
+      $this->addStylesheets(sprintf(
+          '<link rel="stylesheet" type="text/css" href="%s"/>',
+          Resource::renderCSS($styles)
+      ));
+    }
+
+    if (!empty($extraJSResources)) {
+      $js = array_merge($js, $extraJSResources);
+    }
+
+    if (!empty($js)) {
+      $this->addJavascripts(sprintf(
+          '<script type="text/javascript">
+            Modernizr.load("%s");
+          </script>',
+          Resource::renderResource($js)
+      ));
+    }
   }
 
   /**
