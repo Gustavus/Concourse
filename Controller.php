@@ -533,23 +533,25 @@ abstract class Controller
    *
    * @param string $path Path to add
    * @param  string $pathNamespace Namespace of the view path
-   * @return  void
+   * @return  $this
    */
   protected function addTwigLoaderPath($path, $pathNamespace = null)
   {
     $this->setUpTwig($path, $pathNamespace);
+    return $this;
   }
 
   /**
    * Resets the paths for TwigEnvironment's loader
    *
-   * @return void
+   * @return $this
    */
   protected function resetTwigLoaderPaths()
   {
     if (isset($this->twig)) {
       $this->twig->getLoader()->setPaths([]);
     }
+    return $this;
   }
 
   /**
@@ -604,44 +606,48 @@ abstract class Controller
    * Adds error text to content
    *
    * @param string $errorMessage
-   * @return  void
+   * @return  $this
    */
   protected function addError($errorMessage = '')
   {
     $this->content .= '<p class="error">'. $errorMessage . '</p>';
+    return $this;
   }
 
   /**
    * Adds error text to top of content
    *
    * @param string $errorMessage
-   * @return  void
+   * @return  $this
    */
   protected function addErrorToTop($errorMessage = '')
   {
     $this->content = '<p class="error">'. $errorMessage . '</p>' . $this->content;
+    return $this;
   }
 
   /**
    * Adds message text to content
    *
    * @param string $message
-   * @return  void
+   * @return  $this
    */
   protected function addMessage($message = '')
   {
     $this->content .= '<p class="message">'. $message . '</p>';
+    return $this;
   }
 
   /**
    * Adds message text to the top of the content
    *
    * @param string $message
-   * @return  void
+   * @return  $this
    */
   protected function addMessageToTop($message = '')
   {
     $this->content = '<p class="message">'. $message . '</p>' . $this->content;
+    return $this;
   }
 
   /**
@@ -803,7 +809,7 @@ abstract class Controller
    * @param string  $message message to display
    * @param boolean $isError whether this is an error message or not
    * @param string  $path of the page the message should be displayed on
-   * @return  void
+   * @return  $this
    */
   protected function setSessionMessage($message = '', $isError = false, $path = null)
   {
@@ -811,12 +817,14 @@ abstract class Controller
       $path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
     }
     PageUtil::setSessionMessage($message, $isError, $path);
+
+    return $this;
   }
 
   /**
    * Adds session messages to the page if any are set
    *
-   * @return void
+   * @return $this
    */
   protected function addSessionMessages()
   {
@@ -832,6 +840,8 @@ abstract class Controller
     if (!empty($errorMessage)) {
       $this->addErrorToTop($errorMessage);
     }
+
+    return $this;
   }
 
   /**
@@ -932,7 +942,7 @@ abstract class Controller
    * @param  ElementRenderer $renderer Renderer to get the resources for
    * @param  array $extraCSSResources Extra css resources to include
    * @param  array $extraJSResources Whether to include the student orgs js as well
-   * @return  void
+   * @return  $this
    */
   protected function addFormResources(ElementRenderer $renderer, array $extraCSSResources = null, array $extraJSResources = null)
   {
@@ -962,6 +972,8 @@ abstract class Controller
           Resource::renderResource($js)
       ));
     }
+
+    return $this;
   }
 
   /**
