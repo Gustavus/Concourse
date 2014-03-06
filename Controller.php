@@ -1096,7 +1096,6 @@ abstract class Controller
     $element = !$persistor->hasExpired() ? $persistor->getElement() : null;
 
     $persistor->clear();
-    $persistor->close();
 
     return $element;
   }
