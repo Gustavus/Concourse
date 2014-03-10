@@ -140,7 +140,7 @@ class RouterTest extends Test
   {
     $_SERVER['SERVER_NAME'] = 'testing';
     $_SERVER['REQUEST_URI'] = 'testing';
-    $_SERVER['REMOTE_ADDR'] = '2620:46:8000:64:7254:d2ff:feab:17cb';//'testing';
+    $_SERVER['REMOTE_ADDR'] = 'testing';
     $this->overrideHeader();
     $this->routingConfig['indexTwo']['visibleTo'] = ['concourse', 'admin'];
 

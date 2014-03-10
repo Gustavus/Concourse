@@ -17,7 +17,8 @@ require_once 'gatekeeper/gatekeeper.class.php';
 
 use Gustavus\Gatekeeper\Gatekeeper,
   Template\PageActions,
-  Gustavus\Utility\File;
+  Gustavus\Utility\File,
+  Gustavus\Utility\PageUtil;
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
@@ -111,22 +112,9 @@ class Router
   private static function handleRouteNotFound()
   {
     if (self::$routeNotFoundCode === 400) {
-      $header = 'HTTP/1.0 400 Bad Request';
-      $_SERVER['REDIRECT_STATUS'] = 400;
-    } else {
-      $header = 'HTTP/1.0 404 Not Found';
-      $_SERVER['REDIRECT_STATUS'] = 404;
+      return PageUtil::renderBadRequest(true);
     }
-
-    // we don't want the auxbox to be displayed
-    $GLOBALS['templatePreferences']['auxBox'] = false;
-    header($header);
-    ob_start();
-
-    $_SERVER['REDIRECT_URL']    = false;
-    include '/cis/www/errorPages/error.php';
-
-    return ob_get_clean();
+    return PageUtil::renderPageNotFound(true);
   }
 
   /**
@@ -141,16 +129,7 @@ class Router
   protected static function runHandler($alias, array $routeConfig, array $args = array())
   {
     if (!Router::userCanAccessPage($routeConfig)) {
-      // we don't want the auxbox to be displayed
-      $GLOBALS['templatePreferences']['auxBox'] = false;
-      header('HTTP/1.0 403 Forbidden');
-      ob_start();
-
-      $_SERVER['REDIRECT_STATUS'] = 403;
-      $_SERVER['REDIRECT_URL'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : $_SERVER['SCRIPT_NAME'];
-      include '/cis/www/errorPages/error.php';
-
-      return ob_get_clean();
+      return PageUtil::renderAccessDenied(true);
     }
 
     if (!isset($routeConfig['handler'])) {
