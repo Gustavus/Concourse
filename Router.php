@@ -133,13 +133,10 @@ class Router
     }
 
     if (!isset($routeConfig['handler'])) {
-      // let's try to out put the
-      if (strpos($routeConfig['route'], '/') === 0) {
-        $route = substr($routeConfig['route'], 1);
-      } else {
-        $route = $routeConfig['route'];
-      }
-      (new File($route))->serve();
+      // let's try to serve the file since the handler doesn't exist.
+      $path = self::createFilePathFromRoute($routeConfig['route'], $args);
+
+      (new File($path))->serve();
       exit;
     }
 
@@ -151,6 +148,29 @@ class Router
     // This requires the handlers to take in one argument
     return call_user_func(array(new $handler[0]($alias), $handler[1]), $args);
 
+  }
+
+  /**
+   * Creates a file path from the route and the arguments for the route
+   *
+   * @param  string $route
+   * @param  array  $args  arguments that fill in dynamic pieces of the route
+   * @return string
+   */
+  private static function createFilePathFromRoute($route, $args)
+  {
+    if (strpos($route, '/') === 0) {
+      $route = substr($route, 1);
+    }
+
+    if (strpos($route, '{') !== false) {
+      // we need to fill the url with parameters
+      foreach ($args as $key => $param) {
+        $route = preg_replace("`{{$key}.*?}`", $param, $route);
+      }
+    }
+
+    return $route;
   }
 
   /**

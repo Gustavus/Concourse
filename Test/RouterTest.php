@@ -357,4 +357,37 @@ class RouterTest extends Test
     $actual = $this->call('\Gustavus\Concourse\Router', 'runHandler', ['indexTwo', $this->routingConfig['indexTwo'], ['id' => 23]]);
     $this->assertSame('RouterTestController indexTwo(23)', $actual);
   }
+
+  /**
+   * @test
+   */
+  public function createFilePathFromRoute()
+  {
+    $route = '/indexTwo/{id=\d+}/{key}';
+    $args = ['id' => 'arst', 'key' => 'someKey'];
+    $actual = $this->call('\Gustavus\Concourse\Router', 'createFilePathFromRoute', [$route, $args]);
+    $this->assertSame('indexTwo/arst/someKey', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function createFilePathFromRouteNoArgs()
+  {
+    $route = '/indexTwo/image.jpg';
+    $args = [];
+    $actual = $this->call('\Gustavus\Concourse\Router', 'createFilePathFromRoute', [$route, $args]);
+    $this->assertSame('indexTwo/image.jpg', $actual);
+  }
+
+  /**
+   * @test
+   */
+  public function createFilePathFromRouteArgsInMiddle()
+  {
+    $route = '/indexTwo/{id=\d+}/image.jpg';
+    $args = ['id' => 2];
+    $actual = $this->call('\Gustavus\Concourse\Router', 'createFilePathFromRoute', [$route, $args]);
+    $this->assertSame('indexTwo/2/image.jpg', $actual);
+  }
 }
