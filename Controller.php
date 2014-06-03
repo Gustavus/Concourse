@@ -1043,6 +1043,11 @@ abstract class Controller
   {
     $persistor = $this->getElementPersistor($formKey);
 
+    // Use the key to seed the prng. This will allow us to generate the same random names during
+    // a given session.
+    $seed = crc32($persistor->getKey());
+    mt_srand($seed);
+
     $form = is_array($config) ? FormElement::buildElement($config) : $config;
 
     if ($form instanceof FormElement) {
