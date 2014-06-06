@@ -100,6 +100,15 @@ class RoutingUtilTest extends Test
   /**
    * @test
    */
+  public function buildUrlEncodedParam()
+  {
+    $expected = '/arst/indexTwo/file%25arst';
+    $this->assertSame($expected, RoutingUtil::buildUrl($this->routingConfig, 'indexTwo', ['id' => 'file%arst'], '/arst'));
+  }
+
+  /**
+   * @test
+   */
   public function buildUrlParams()
   {
     $expected = '/arst/indexTwo/2/hello';
