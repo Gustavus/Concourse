@@ -66,6 +66,7 @@ class ControllerTest extends Test
       }
     }
     $_SERVER['SCRIPT_NAME'] = self::BASE_DIR . 'index.php';
+    $_SERVER['REQUEST_URI'] = self::BASE_DIR . 'index.php';
     $this->unAuthenticate();
   }
 
@@ -371,6 +372,24 @@ class ControllerTest extends Test
 
     $actual = $this->controller->renderPage();
     $messagePos = strpos($actual['content'], '<p class="message">testMessage');
+    $errorMessagePos = strpos($actual['content'], '<p class="error">testErrorMessage');
+
+    $this->assertTrue($errorMessagePos !== false);
+    $this->assertTrue($messagePos !== false);
+    $this->assertTrue($errorMessagePos < $messagePos);
+  }
+
+  /**
+   * @test
+   */
+  public function addSessionMessage()
+  {
+    $this->controller->addSessionMessage('testMessage');
+    $this->controller->addSessionMessage('testMessage1');
+    $this->controller->addSessionMessage('testErrorMessage', true);
+
+    $actual = $this->controller->renderPage();
+    $messagePos = strpos($actual['content'], '<p class="message">testMessage<br/><br/>testMessage1');
     $errorMessagePos = strpos($actual['content'], '<p class="error">testErrorMessage');
 
     $this->assertTrue($errorMessagePos !== false);

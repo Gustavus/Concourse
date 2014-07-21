@@ -822,6 +822,33 @@ abstract class Controller
   }
 
   /**
+   * Adds to the message to be displayed on the next time the page is loaded
+   *
+   * @param string  $message message to display
+   * @param boolean $isError whether this is an error message or not
+   * @param string  $path of the page the message should be displayed on
+   * @return  $this
+   */
+  protected function addSessionMessage($message = '', $isError = false, $path = null)
+  {
+    if ($path === null) {
+      $path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+    }
+    if ($isError) {
+      $currentMessage = PageUtil::getSessionErrorMessage($path);
+    } else {
+      $currentMessage = PageUtil::getSessionMessage($path);
+    }
+    if (!empty($currentMessage)) {
+      $message = sprintf('%s<br/><br/>%s', $currentMessage, $message);
+    }
+
+    PageUtil::setSessionMessage($message, $isError, $path);
+
+    return $this;
+  }
+
+  /**
    * Adds session messages to the page if any are set
    *
    * @return $this
