@@ -122,7 +122,25 @@ class RoutingUtilTest extends Test
   public function buildUrlParamNotFound()
   {
     $actual = RoutingUtil::buildUrl($this->routingConfig, 'indexT', ['id' => 2]);
+
     $this->assertNull($actual);
+  }
+
+  /**
+   * @test
+   */
+  public function buildUrlRegex()
+  {
+    $expected = '/Gustavus/Concourse/ControllerTest/test/123456';
+    $routingConfig = [
+      'index' => [
+        'route'   => '/test/{name=.{6}}',
+        'handler' => '\Gustavus\Concourse\Test\RouterTestController:index',
+      ],
+    ];
+
+    $actual = RoutingUtil::buildUrl($routingConfig, 'index', ['name' => '123456']);
+    $this->assertSame($expected, $actual);
   }
 
   /**

@@ -222,6 +222,8 @@ class RouterTest extends Test
       array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', '23', 'id2'], ['id' => '23']),
       array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', '2.5', 'id2'], false),
       array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', 'hello', 'id2'], false),
+      array(['indexTwo', '{id=\d{6}}'], ['indexTwo', '12345'], false),
+      array(['indexTwo', '{id=\d{6}}'], ['indexTwo', '123456'], ['id' => '123456']),
     );
   }
 
@@ -244,6 +246,8 @@ class RouterTest extends Test
       ['id', 'id=\d+', '23'],
       [false, 'id=\d+', '2.5'],
       [false, 'id=\d+', 'hello'],
+      [false, 'id=\d{6}', '12345'],
+      ['id', 'id=\d{6}', '123456'],
     ];
   }
 

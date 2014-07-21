@@ -225,7 +225,7 @@ class Router
           // we don't want to keep going
           return false;
         } else {
-          $trimmedConfigRoute = trim($configRoute[$i], '{}');
+          $trimmedConfigRoute = preg_replace('`(?:^\{|\}$)`', '',$configRoute[$i]);
           if (($key = Router::checkRouteRegex($trimmedConfigRoute, $route[$i])) !== false) {
             // it matches
             $return[$key] = $route[$i];
