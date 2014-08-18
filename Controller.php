@@ -67,6 +67,11 @@ abstract class Controller
   /**
    * @var string
    */
+  protected $localNavigation = '';
+
+  /**
+   * @var string
+   */
   protected $stylesheets = '';
 
   /**
