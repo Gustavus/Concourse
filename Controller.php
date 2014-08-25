@@ -26,6 +26,7 @@ use Gustavus\TemplateBuilder\Builder as TemplateBuilder,
   Gustavus\Resources\Resource,
   Gustavus\Extensibility\Filters,
   Gustavus\GACCache\GlobalCache,
+  Doctrine\DBAL\Connection,
   InvalidArgumentException,
   UnexpectedValueException;
 
@@ -748,7 +749,7 @@ abstract class Controller
    * @param  string $projectName Name of the project to get the db connection for
    * @param  \PDO   $pdo         Optional pre-existing connection to use
    * @param  string $charset     Charset to default the connection to
-   * @return Doctrine\DBAL\Connection
+   * @return Connection
    */
   protected function getDBAL($projectName, $pdo = null, $charset = null)
   {
@@ -756,6 +757,18 @@ abstract class Controller
       $this->dbal = DBAL::getDBAL($projectName, $pdo, $charset);
     }
     return $this->dbal;
+  }
+
+  /**
+   * Sets the DBAL connection for us to use
+   *
+   * @param Connection $dbal Connection to use
+   * @return  $this
+   */
+  protected function setDBAL(Connection $dbal)
+  {
+    $this->dbal = $dbal;
+    return $this;
   }
 
   /**
