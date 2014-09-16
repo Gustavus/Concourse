@@ -69,6 +69,6 @@ class ControllerTestController extends Controller
    */
   protected function redirect($path = '/', $statusCode = 303)
   {
-    $_POST = null;
+    $_POST = [];
   }
 }
