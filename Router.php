@@ -188,11 +188,12 @@ class Router
     foreach ($routes as $key => $value) {
       // make sure this piece has a route.
       if (isset($value['route'])) {
-        $splitKey = explode('/', trim($value['route'], '/'));
-        //$splitKey = explode('/', trim($key, '/'));
-        if (count($splitKey) === count($splitRoute)) {
+        $splitConfigRoute = explode('/', trim($value['route'], '/'));
+        $routeContainsWildCard = (strpos($value['route'], '=*') !== false);
+
+        if (count($splitConfigRoute) === count($splitRoute) || $routeContainsWildCard) {
           // we might have a match. Let's look to see how close they match
-          $analyzeResult = Router::analyzeSplitRoutes($splitKey, $splitRoute);
+          $analyzeResult = Router::analyzeSplitRoutes($splitConfigRoute, $splitRoute);
           if ($analyzeResult !== false) {
             // we have a match!
             return [$key => $analyzeResult];
@@ -225,7 +226,14 @@ class Router
           // we don't want to keep going
           return false;
         } else {
-          $trimmedConfigRoute = preg_replace('`(?:^\{|\}$)`', '',$configRoute[$i]);
+          $trimmedConfigRoute = preg_replace('`(?:^\{|\}$)`', '', $configRoute[$i]);
+          if (($wildCardPos = strpos($trimmedConfigRoute, '=*')) !== false) {
+            // we have a wildCard.
+            // Everything from here on will match the current argument
+            $caughtRoutes = array_slice($route, $i);
+            $return[substr($trimmedConfigRoute, 0, $wildCardPos)] = implode('/', $caughtRoutes);
+            return $return;
+          }
           if (($key = Router::checkRouteRegex($trimmedConfigRoute, $route[$i])) !== false) {
             // it matches
             $return[$key] = $route[$i];

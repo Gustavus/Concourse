@@ -189,6 +189,10 @@ class RouterTest extends Test
       array(['index' => ['route' => '/'], 'indexTwoId' => ['route' => '/indexTwo/id']], '/indexTwo/id/23', false),
       array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id'], 'indexTwoId' => ['route' => '/indexTwo/id/{id}']], '/indexTwo/id/23', ['indexTwoId' => ['id' => '23']]),
       array(['index' => ['route' => '/'], 'indexTwo' => ['route' => '/indexTwo/id'], 'indexTwoId' => ['route' => '/indexTwo/id/id']], '/indexTwo/id/23', false),
+      array(['index' => ['route' => '/{file=*}']], '/indexTwo/id/23', ['index' => ['file' => 'indexTwo/id/23']]),
+      array(['index' => ['route' => '/arst/{file=*}']], '/indexTwo/id/23', false),
+      array(['index' => ['route' => 'arst/{file=*}']], '/arst/indexTwo/id/23', ['index' => ['file' => 'indexTwo/id/23']]),
+      array(['index' => ['route' => 'arst/{file=*}']], '/arst/indexTwo', ['index' => ['file' => 'indexTwo']]),
     );
   }
 
@@ -224,6 +228,10 @@ class RouterTest extends Test
       array(['indexTwo', '{id=\d+}', 'id2'], ['indexTwo', 'hello', 'id2'], false),
       array(['indexTwo', '{id=\d{6}}'], ['indexTwo', '12345'], false),
       array(['indexTwo', '{id=\d{6}}'], ['indexTwo', '123456'], ['id' => '123456']),
+      array(['{file=*}'], ['indexTwo', '123456'], ['file' => 'indexTwo/123456']),
+      array(['indexTwo', '{file=*}'], ['indexTwo', '123456'], ['file' => '123456']),
+      array(['indexTwo', '{file=*}'], ['indexTwo', '123456', 'arst'], ['file' => '123456/arst']),
+      array(['indexTwo', 'arst', '{file=*}'], ['indexTwo', '123456', 'arst'], false),
     );
   }
 
