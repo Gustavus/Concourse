@@ -890,6 +890,18 @@ abstract class Controller
   }
 
   /**
+   * Adds a meta tag telling robots not to index this page.
+   *
+   * @return  void
+   */
+  protected function addNoRobotsTag()
+  {
+    Filters::add('head', function($content) {
+      return $content . '<meta name="robots" content="noindex" />';
+    });
+  }
+
+  /**
    * Checks to see if the logged in user has permissions in gatekeeper
    *
    * @param  string $applicationName Application to check permissions in
