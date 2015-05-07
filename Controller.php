@@ -1024,7 +1024,12 @@ abstract class Controller
     if (!empty($js)) {
       $this->addJavascripts(sprintf(
           '<script type="text/javascript">
-            Modernizr.load("%s");
+            require.config({
+              shim: {
+                "%1$s": ["baseJS"]
+              }
+            });
+            require(["%1$s"]);
           </script>',
           Resource::renderResource($js)
       ));
