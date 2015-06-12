@@ -6,19 +6,16 @@
 
 namespace Gustavus\Concourse;
 
-// we don't want the template to start when we require it.
-// This will still set up debugging and extreme maintenance.
-if (!defined('GUSTAVUS_START_TEMPLATE')) {
-  define('GUSTAVUS_START_TEMPLATE', false);
-}
-
-require_once 'template/request.class.php';
 require_once 'gatekeeper/gatekeeper.class.php';
 
 use Gustavus\Gatekeeper\Gatekeeper,
-  Template\PageActions,
+  Gustavus\Template\PageActions,
   Gustavus\Utility\File,
-  Gustavus\Utility\PageUtil;
+  Gustavus\Utility\PageUtil,
+  Gustavus\Template\Request as TemplateRequest;
+
+// this sets up debugging and extreme maintenance
+TemplateRequest::init();
 
 /**
  * Manages sending people to the requested page. Checks to see if the user has access to it first.
