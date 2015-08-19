@@ -131,7 +131,7 @@ class RouterTest extends Test
 
     $this->assertNotEmpty($actual);
     $this->assertContains('404', $actual);
-    $this->set('\Template', 'template', null);
+    $this->set('\Gustavus\Template\Template', 'template', null);
   }
 
   /**
@@ -150,7 +150,7 @@ class RouterTest extends Test
 
     $this->assertNotEmpty($actual);
     $this->assertContains('Access Denied', $actual);
-    $this->set('\Template', 'template', null);
+    $this->set('\Gustavus\Template\Template', 'template', null);
   }
 
   /**

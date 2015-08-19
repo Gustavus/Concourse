@@ -101,7 +101,7 @@ class RoutingUtil extends Router
   private static function findForwardingHandlerAlias($routeConfig, $handler)
   {
     foreach ($routeConfig as $alias => $config) {
-      if ($handler === $config['handler']) {
+      if (isset($config['handler']) && $handler === $config['handler']) {
         return $alias;
       }
     }

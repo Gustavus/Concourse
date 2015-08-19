@@ -229,6 +229,16 @@ class RoutingUtilTest extends Test
   /**
    * @test
    */
+  public function findForwardingHandlerAliasNoHandlerInConfig()
+  {
+    $routingConfig = array_merge([['route' => 'arst']], $this->routingConfig);
+    $actual = $this->call('\Gustavus\Concourse\RoutingUtil', 'findForwardingHandlerAlias', array($routingConfig, '\Gustavus\Concourse\Test\RouterTestController:arstArst'));
+    $this->assertSame(['handler' => '\Gustavus\Concourse\Test\RouterTestController:arstArst'], $actual);
+  }
+
+  /**
+   * @test
+   */
   public function findForwardingHandlerAliasNotFound()
   {
     $expected = ['handler' => '\Gustavus\Concourse\Test\RouterTestController:indexTwoarst'];
