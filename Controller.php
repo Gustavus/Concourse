@@ -370,7 +370,14 @@ abstract class Controller
   {
     foreach ($crumbs as &$crumb) {
       if (isset($crumb['alias'])) {
-        $crumb['url'] = $this->buildUrl($crumb['alias']);
+        if (is_array($crumb['alias'])) {
+          $alias = key($crumb['alias']);
+          $params = current($crumb['alias']);
+        } else {
+          $alias = $crumb['alias'];
+          $params = [];
+        }
+        $crumb['url'] = $this->buildUrl($alias, $params);
         unset($crumb['alias']);
       }
     }
