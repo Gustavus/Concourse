@@ -46,9 +46,22 @@ class RoutingUtil extends Router
       }
       $url = str_replace('//', '/', $baseDir . $route);
       if ($fullUrl) {
+        // $_SERVER variables that contain host information
+        $serverHostVars = ['HTTP_HOST', 'SERVER_NAME', 'HOSTNAME', 'HOST'];
+        $host = null;
+        // look for our host info in $_SERVER
+        foreach ($serverHostVars as $serverVar) {
+          if (isset($_SERVER[$serverVar])) {
+            $host = $_SERVER[$serverVar];
+            break;
+          }
+        }
+        if (empty($host)) {
+          $host = (\Config::isBeta()) ? 'beta.gac.edu' : 'gustavus.edu';
+        }
         return sprintf(
             'https://%s%s',
-            $_SERVER['HTTP_HOST'],
+            $host,
             $url
         );
       }
