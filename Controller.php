@@ -970,7 +970,7 @@ abstract class Controller
    * @param  callable|array $configuration   Callback used to get the configuration array if needed, or the configuration array itself.
    *     <strong>Note:</strong> Passing a callable is recommended
    * @param  array    $callableParameters    Parameters to pass onto the callable
-   * @param  mixed $ttl Amount of time the form is kept around. Defaulted to 30 days (2592000)
+   * @param  mixed $ttl Amount of time the form is kept around. A value of null, 0, or <0 will never expire. Default: 30 days (2592000)
    *
    * @throws  InvalidArgumentException If $configuration is not an array or a callable
    * @return FormBuilder
@@ -1101,7 +1101,7 @@ abstract class Controller
    *
    * @param  array   $config   Configuration array to build a form from
    * @param  string  $formKey  Key of the form
-   * @param  mixed   $ttl      Amount of time the form is kept around. Defaulted to 30 days (2592000)
+   * @param  mixed   $ttl      Amount of time the form is kept around. A value of null, 0, or <0 will never expire. Default: 30 days (2592000)
    *
    * @throws InvalidArgumentException
    *  if $config is not an array nor a FormElement instance.
