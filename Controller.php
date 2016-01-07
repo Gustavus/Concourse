@@ -664,6 +664,20 @@ abstract class Controller
   }
 
   /**
+   * Forces a user to login
+   *
+   * @param  string $returnToURL  URL to send users to after successfully logging in
+   * @return void
+   */
+  protected function login($returnToURL = '')
+  {
+    if (empty($returnToURL)) {
+      $returnToURL = 'https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+    }
+    Gatekeeper::logIn($returnToURL);
+  }
+
+  /**
    * Checks to see if a user is logged in.
    * @return boolean true if the user is logged in, false otherwise
    */
