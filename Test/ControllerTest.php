@@ -299,7 +299,7 @@ class ControllerTest extends Test
   {
     $this->controller->setContent('arst');
     $this->controller->addError('Help!');
-    $this->assertSame('arst<p class="error">Help!</p>', $this->controller->getContent());
+    $this->assertSame('arst<div class="error">Help!</div>', $this->controller->getContent());
   }
 
   /**
@@ -309,7 +309,7 @@ class ControllerTest extends Test
   {
     $this->controller->setContent('arst');
     $this->controller->addErrorToTop('Help!');
-    $this->assertSame('<p class="error">Help!</p>arst', $this->controller->getContent());
+    $this->assertSame('<div class="error">Help!</div>arst', $this->controller->getContent());
   }
 
   /**
@@ -319,7 +319,7 @@ class ControllerTest extends Test
   {
     $this->controller->setContent('');
     $this->controller->addMessage('Help!');
-    $this->assertSame('<p class="message">Help!</p>', $this->controller->getContent());
+    $this->assertSame('<div class="message">Help!</div>', $this->controller->getContent());
   }
 
   /**
@@ -328,7 +328,7 @@ class ControllerTest extends Test
   public function addMessageToTop()
   {
     $this->controller->addMessageToTop('Help!');
-    $this->assertSame('<p class="message">Help!</p>' . $this->controllerProperties['content'], $this->controller->getContent());
+    $this->assertSame('<div class="message">Help!</div>' . $this->controllerProperties['content'], $this->controller->getContent());
   }
 
   /**
@@ -371,8 +371,8 @@ class ControllerTest extends Test
     $this->controller->setSessionMessage('testErrorMessage', true);
 
     $actual = $this->controller->renderPage();
-    $messagePos = strpos($actual['content'], '<p class="message">testMessage');
-    $errorMessagePos = strpos($actual['content'], '<p class="error">testErrorMessage');
+    $messagePos = strpos($actual['content'], '<div class="message">testMessage');
+    $errorMessagePos = strpos($actual['content'], '<div class="error">testErrorMessage');
 
     $this->assertTrue($errorMessagePos !== false);
     $this->assertTrue($messagePos !== false);
@@ -389,8 +389,8 @@ class ControllerTest extends Test
     $this->controller->addSessionMessage('testErrorMessage', true);
 
     $actual = $this->controller->renderPage();
-    $messagePos = strpos($actual['content'], '<p class="message">testMessage<br/><br/>testMessage1');
-    $errorMessagePos = strpos($actual['content'], '<p class="error">testErrorMessage');
+    $messagePos = strpos($actual['content'], '<div class="message">testMessage<br/><br/>testMessage1');
+    $errorMessagePos = strpos($actual['content'], '<div class="error">testErrorMessage');
 
     $this->assertTrue($errorMessagePos !== false);
     $this->assertTrue($messagePos !== false);
@@ -419,7 +419,7 @@ class ControllerTest extends Test
 
     $_SERVER['REQUEST_URI'] = '/';
     $actual = $this->controller->renderPage();
-    $this->assertTrue(strpos($actual['content'], '<p class="message">someTestMessage') !== false);
+    $this->assertTrue(strpos($actual['content'], '<div class="message">someTestMessage') !== false);
   }
 
   /**
@@ -431,7 +431,7 @@ class ControllerTest extends Test
 
     $_SERVER['REQUEST_URI'] = '/';
     $actual = $this->controller->renderPage();
-    $this->assertTrue(strpos($actual['content'], '<p class="error">someTestErrorMessage') !== false);
+    $this->assertTrue(strpos($actual['content'], '<div class="error">someTestErrorMessage') !== false);
   }
 
   /**
@@ -632,7 +632,7 @@ class ControllerTest extends Test
   {
     $actual = $this->controller->renderErrorPage('This is an error');
 
-    $this->assertTrue(strpos($actual['content'], '<p class="error">This is an error') !== false);
+    $this->assertTrue(strpos($actual['content'], '<div class="error">This is an error') !== false);
   }
 
   /**

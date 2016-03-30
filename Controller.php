@@ -623,7 +623,7 @@ abstract class Controller
    */
   protected function addError($errorMessage = '')
   {
-    $this->content .= '<p class="error">'. $errorMessage . '</p>';
+    $this->content .= '<div class="error">'. $errorMessage . '</div>';
     return $this;
   }
 
@@ -635,7 +635,7 @@ abstract class Controller
    */
   protected function addErrorToTop($errorMessage = '')
   {
-    $this->content = '<p class="error">'. $errorMessage . '</p>' . $this->content;
+    $this->content = '<div class="error">'. $errorMessage . '</div>' . $this->content;
     return $this;
   }
 
@@ -647,7 +647,7 @@ abstract class Controller
    */
   protected function addMessage($message = '')
   {
-    $this->content .= '<p class="message">'. $message . '</p>';
+    $this->content .= '<div class="message">'. $message . '</div>';
     return $this;
   }
 
@@ -659,7 +659,7 @@ abstract class Controller
    */
   protected function addMessageToTop($message = '')
   {
-    $this->content = '<p class="message">'. $message . '</p>' . $this->content;
+    $this->content = '<div class="message">'. $message . '</div>' . $this->content;
     return $this;
   }
 
